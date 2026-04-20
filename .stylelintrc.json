@@ -1,0 +1,12 @@
+{
+	"extends": ["@wordpress/stylelint-config/scss"],
+	"rules": {
+		"selector-class-pattern": [
+			"^[a-z][a-z0-9]*(-[a-z0-9]+)*(__[a-z0-9]+(-[a-z0-9]+)*)?(--[a-z0-9]+(-[a-z0-9]+)*)?$",
+			{
+				"message": "Expected class to be lowercase, hyphen-separated, with optional BEM __element / --modifier (matches WordPress block class naming)."
+			}
+		],
+		"no-descending-specificity": null
+	}
+}

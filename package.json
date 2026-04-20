@@ -1,22 +1,45 @@
 {
-	"name": "themes-starter-fse",
+	"name": "wp-starter",
 	"version": "1.0.0",
-	"license": "GPL-2.0",
-	"description": "A WordPress Starter Theme built for Full Site Editing.",
-	"homepage": "https://them.es",
-	"author": "them.es",
+	"description": "A modern FSE WordPress starter theme (PHP 8.3+, WordPress 6.9+).",
+	"author": "Colin Lewis",
+	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"wordpress",
+		"wordpress-theme",
+		"block-theme",
+		"full-site-editing",
+		"starter-theme"
+	],
+	"homepage": "https://colinlewis.se",
 	"repository": {
 		"type": "git",
-		"url": "git://github.com/them-es/themes-starter-fse.git"
+		"url": "git+https://github.com/colinlewis/wp-starter.git"
 	},
-	"scripts": {
-		"watch": "webpack serve && wp-scripts start",
-		"build": "wp-scripts build"
+	"bugs": {
+		"url": "https://github.com/colinlewis/wp-starter/issues"
 	},
-	"dependencies": {},
+	"private": true,
 	"devDependencies": {
-		"@wordpress/scripts": "^27.7.0",
+		"@wordpress/env": "^11.4.0",
+		"@wordpress/prettier-config": "^4.44.0",
+		"@wordpress/scripts": "^32.0.0",
+		"@wordpress/stylelint-config": "^23.36.0",
 		"path": "^0.12.7",
 		"webpack-remove-empty-scripts": "^1.0.4"
+	},
+	"scripts": {
+		"start": "wp-scripts start",
+		"build": "wp-scripts build",
+		"lint": "wp-scripts lint-js assets webpack.config.js",
+		"lint:js": "wp-scripts lint-js assets webpack.config.js",
+		"lint:css": "wp-scripts lint-style 'assets/**/*.scss'",
+		"lint:pkg": "wp-scripts lint-pkg-json",
+		"format": "wp-scripts format",
+		"env:start": "wp-env start",
+		"env:stop": "wp-env stop",
+		"env:destroy": "wp-env destroy",
+		"env:clean": "wp-env clean all",
+		"env:cli": "wp-env run cli wp"
 	}
 }

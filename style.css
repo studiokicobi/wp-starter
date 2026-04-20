@@ -1,17 +1,17 @@
 /*
 Theme Name: WP Starter
-Theme URI: https://them.es/starter-fse
+Theme URI: https://github.com/colinlewis/wp-starter
 Author: Colin Lewis
 Author URI: https://colinlewis.se
-Description: 
-Version: 1.2.7
-Requires at least: 5.9
+Description: A modern Full Site Editing starter theme built for managed/VPS WordPress hosting and current local dev stacks. Targets PHP 8.3+ and WordPress 6.9+. Intentionally not a broad shared-hosting compatibility base.
+Version: 1.0.0
+Requires at least: 6.9
 Tested up to: 6.9
-Requires PHP: 7.2
+Requires PHP: 8.3
 License: GPL version 2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0
 Text Domain: wp-starter
-Tags: full-site-editing, one-column, flexible-header, accessibility-ready, custom-colors, custom-menu, custom-logo, editor-style, featured-images, footer-widgets, rtl-language-support, sticky-post, threaded-comments, translation-ready
+Tags: full-site-editing, block-styles, block-patterns, one-column, flexible-header, accessibility-ready, custom-colors, custom-menu, custom-logo, editor-style, featured-images, footer-widgets, rtl-language-support, sticky-post, threaded-comments, translation-ready
 */
 
 /* Don't overwrite this file. Compile "/assets/main.scss" to "/build/main.css" */

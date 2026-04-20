@@ -1,0 +1,47 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+jobs:
+    node:
+        name: Node (lint + build)
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
+
+            - run: npm ci
+            - run: npm run lint
+            - run: npm run lint:css
+            - run: npm run build
+
+    php:
+        name: PHP (phpcs + phpstan)
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.3'
+                  tools: composer:v2
+                  coverage: none
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v4
+              with:
+                  path: ~/.cache/composer/files
+                  key: composer-${{ hashFiles('composer.json') }}
+                  restore-keys: composer-
+
+            - run: composer install --prefer-dist --no-progress --no-interaction
+            - run: composer phpcs
+            - run: composer phpstan

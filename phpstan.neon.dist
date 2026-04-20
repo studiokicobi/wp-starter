@@ -1,0 +1,14 @@
+includes:
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+    level: 6
+    # Expand paths as the theme grows — add patterns/, inc/, blocks/, or any
+    # other theme-specific PHP entry points when they appear.
+    paths:
+        - functions.php
+        - patterns
+    excludePaths:
+        - build/*
+        - node_modules/*
+        - vendor/*

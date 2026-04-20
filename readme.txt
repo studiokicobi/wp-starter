@@ -1,30 +1,31 @@
-=== WP Starter FSE ===
-Contributors: them.es
-Tested up to: 6.8
-Stable tag: 1.2
+=== WP Starter ===
+Contributors: colinlewis
+Requires at least: 6.9
+Tested up to: 6.9
+Requires PHP: 8.3
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-WP Starter Theme built for the new Full Site Editing experience.
+A modern Full Site Editing WordPress starter theme for managed/VPS hosting.
 
 == Description ==
 
-* Full Site Editing Starter Theme
-* Responsive Layout with default blocks that are already available in WordPress
-* Customization via SASS, CSS variables and theme.json
+A Full Site Editing starter theme built on top of them.es/starter-fse, tuned for modern WordPress (6.9+) and PHP 8.3+. Intended as a base for client projects on managed or VPS hosting, not as a broad shared-hosting compatibility base.
+
+* Full Site Editing (block theme) with templates, template parts, and patterns
+* `theme.json` v3 as the primary source of styling and configuration
+* SCSS + `@wordpress/scripts` build pipeline for `assets/main.js` and `assets/main.scss`
+* Ships with AI agent skills (`.claude/`, `.codex/`) and repo-level guardrails
 
 == Installation ==
 
-1. In your admin panel, go to Appearance -> Themes and click the Add New button.
-2. Click Upload and Choose File, then select the theme's ZIP file. Click Install Now.
-3. Click Activate to use your new theme right away.
+1. Generate a new repo from this GitHub template.
+2. Clone into `wp-content/themes/<your-slug>/` or mount via `wp-env`.
+3. Run `npm install` and `composer install`.
+4. Follow the rename checklist in `README.md` before development.
 
-== Frequently Asked Questions ==
+== Changelog ==
 
-= How do I change the Theme settings? =
-
-You can change the settings of your site easily.
-
-1. In your admin panel, go to Site Editor.
-2. Edit the Templates, Template Parts and the Navigation(s).
-3. Preview the changes in realtime.
+= 1.0.0 =
+* Initial fork of them.es/starter-fse with modern-hosting baseline, PHP tooling, wp-env, and AI agent skills.
