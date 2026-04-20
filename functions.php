@@ -1,4 +1,10 @@
 <?php
+/**
+ * WP Starter theme functions.
+ *
+ * @package wp-starter
+ */
+
 if ( ! function_exists( 'wp_starter_theme_support' ) ) {
 	/**
 	 * General Theme Settings.
@@ -17,58 +23,46 @@ if ( ! function_exists( 'wp_starter_theme_support' ) ) {
 		add_theme_support( 'responsive-embeds' );
 		// Add support for Block Styles.
 		add_theme_support( 'wp-block-styles' );
-
-		// Add support for Editor Styles.
-		add_theme_support( 'editor-styles' );
-		// Enqueue Editor Styles.
-		add_editor_style(
-			'style-editor.css'
-		);
 	}
 	add_action( 'after_setup_theme', 'wp_starter_theme_support' );
 
-	/**
-	 * Enqueue editor stylesheet (for iframed Post Editor):
-	 * https://make.wordpress.org/core/2023/07/18/miscellaneous-editor-changes-in-wordpress-6-3/#post-editor-iframed
-	 *
-	 * @since v1.2.2
-	 *
-	 * @return void
-	 */
-	function wp_starter_load_editor_styles() {
-		if ( is_admin() ) {
-			wp_enqueue_style( 'editor-style', get_theme_file_uri( 'style-editor.css' ) );
-		}
-	}
-	add_action( 'enqueue_block_assets', 'wp_starter_load_editor_styles' );
-
-	// Disable Block Directory: https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/filters/editor-filters.md#block-directory
+	// Disable Block Directory. See https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/filters/editor-filters.md#block-directory.
 	remove_action( 'enqueue_block_editor_assets', 'wp_enqueue_editor_block_directory_assets' );
 	remove_action( 'enqueue_block_editor_assets', 'gutenberg_enqueue_block_editor_assets_block_directory' );
 }
 
-/**
- * Custom Template part.
- *
- * @param array $areas Template part areas.
- *
- * @return array
- */
-function wp_starter_custom_template_part_area( $areas ) {
-	array_push(
-		$areas,
-		array(
-			'area'        => 'query',
-			'label'       => esc_html__( 'Query', 'wp-starter' ),
-			'description' => esc_html__( 'Custom query area', 'wp-starter' ),
-			'icon'        => 'layout',
-			'area_tag'    => 'div',
-		)
-	);
+if ( ! function_exists( 'wp_starter_get_main_asset_data' ) ) {
+	/**
+	 * Get the dependency and version metadata for the compiled main bundle.
+	 *
+	 * @return array{dependencies: array<int, string>, version: string}
+	 */
+	function wp_starter_get_main_asset_data() {
+		$theme_version = wp_get_theme()->get( 'Version' );
+		$asset_file    = get_theme_file_path( 'build/main.asset.php' );
 
-	return $areas;
+		if ( ! file_exists( $asset_file ) ) {
+			return array(
+				'dependencies' => array(),
+				'version'      => $theme_version,
+			);
+		}
+
+		$asset_data = require $asset_file;
+
+		if ( ! is_array( $asset_data ) ) {
+			return array(
+				'dependencies' => array(),
+				'version'      => $theme_version,
+			);
+		}
+
+		return array(
+			'dependencies' => isset( $asset_data['dependencies'] ) && is_array( $asset_data['dependencies'] ) ? $asset_data['dependencies'] : array(),
+			'version'      => isset( $asset_data['version'] ) && is_string( $asset_data['version'] ) ? $asset_data['version'] : $theme_version,
+		);
+	}
 }
-add_filter( 'default_wp_template_part_areas', 'wp_starter_custom_template_part_area' );
 
 if ( ! function_exists( 'wp_starter_load_scripts' ) ) {
 	/**
@@ -78,17 +72,18 @@ if ( ! function_exists( 'wp_starter_load_scripts' ) ) {
 	 */
 	function wp_starter_load_scripts() {
 		$theme_version = wp_get_theme()->get( 'Version' );
+		$asset_data    = wp_starter_get_main_asset_data();
+		$style_handle  = 'wp-starter-style';
+		$main_handle   = 'wp-starter-main';
+		$script_handle = 'wp-starter-script';
 
 		// 1. Styles.
-		wp_enqueue_style( 'style', get_stylesheet_uri(), array(), $theme_version );
-		wp_enqueue_style( 'main', get_theme_file_uri( 'build/main.css' ), array(), $theme_version, 'all' ); // main.scss: Compiled custom styles.
-
-		if ( is_rtl() ) {
-			wp_enqueue_style( 'rtl', get_theme_file_uri( 'build/rtl.css' ), array(), $theme_version, 'all' );
-		}
+		wp_enqueue_style( $style_handle, get_stylesheet_uri(), array(), $theme_version );
+		wp_enqueue_style( $main_handle, get_theme_file_uri( 'build/main.css' ), array( $style_handle ), $asset_data['version'], 'all' ); // main.scss: Compiled custom styles.
+		wp_style_add_data( $main_handle, 'rtl', 'replace' );
 
 		// 2. Scripts.
-		wp_enqueue_script( 'mainjs', get_theme_file_uri( 'build/main.js' ), array(), $theme_version, true );
+		wp_enqueue_script( $script_handle, get_theme_file_uri( 'build/main.js' ), $asset_data['dependencies'], $asset_data['version'], true );
 	}
 	add_action( 'wp_enqueue_scripts', 'wp_starter_load_scripts' );
 }
