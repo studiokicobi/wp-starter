@@ -149,15 +149,20 @@ if command -v node > /dev/null; then
 		for (const p of sizes) {
 			const m = /^([\d.]+)rem$/.exec(p.size || "");
 			if (!m) continue;
-			if (parseFloat(m[1]) > 1 && (!p.fluid || typeof p.fluid !== "object")) {
+			if (parseFloat(m[1]) <= 1) continue;
+			if (!p.fluid || typeof p.fluid !== "object") {
 				out.push(p.slug + ": size " + p.size + " but no fluid { min, max } object");
+				continue;
+			}
+			if (typeof p.fluid.min !== "string" || typeof p.fluid.max !== "string") {
+				out.push(p.slug + ": fluid must carry both min and max as strings");
 			}
 		}
 		if (out.length) { console.log(out.join("\n")); process.exit(1); }
 	' 2>&1); then
-		pass "every heading-sized fontSize preset has a fluid object"
+		pass "every heading-sized fontSize preset has fluid { min, max }"
 	else
-		fail "fontSize presets missing fluid object (required when size > 1rem):"
+		fail "fontSize presets missing fluid { min, max } (required when size > 1rem):"
 		printf "%s\n" "$preset_output" | sed 's/^/    /'
 	fi
 else
@@ -231,6 +236,42 @@ if [ -z "$names" ]; then
 	pass "no customTemplates declared"
 elif [ $missing -eq 0 ]; then
 	pass "every customTemplates entry has a matching file"
+fi
+
+# ---------------------------------------------------------------------------
+# Style variations — every styles/*.json file must parse. Broken variation
+# JSON silently degrades to "no variation available" in the editor; catch
+# it here so it isn't discovered at project delivery.
+# ---------------------------------------------------------------------------
+section "Style variations parse"
+
+if command -v node > /dev/null; then
+	style_files=$(find styles -maxdepth 1 -name '*.json' 2>/dev/null || true)
+	if [ -z "$style_files" ]; then
+		pass "no styles/*.json files declared"
+	else
+		if styles_output=$(node -e '
+			const fs = require("fs");
+			const path = require("path");
+			const dir = "styles";
+			if (!fs.existsSync(dir)) process.exit(0);
+			const files = fs.readdirSync(dir).filter(f => f.endsWith(".json"));
+			const bad = [];
+			for (const f of files) {
+				const full = path.join(dir, f);
+				try { JSON.parse(fs.readFileSync(full, "utf8")); }
+				catch (e) { bad.push(full + ": " + e.message); }
+			}
+			if (bad.length) { console.log(bad.join("\n")); process.exit(1); }
+		' 2>&1); then
+			pass "every styles/*.json file parses"
+		else
+			fail "styles/*.json contains invalid JSON:"
+			printf "%s\n" "$styles_output" | sed 's/^/    /'
+		fi
+	fi
+else
+	fail "node not found on PATH (cannot validate styles/*.json)"
 fi
 
 # ---------------------------------------------------------------------------

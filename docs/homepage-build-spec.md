@@ -71,11 +71,11 @@ Build-specific additions for this prompt (non-negotiable, but not in the verify 
 10. **Global settings baseline.** `settings.color.defaultPalette: false`, `settings.spacing.defaultSpacingSizes: false`, `settings.appearanceTools: true`, `settings.useRootPaddingAwareAlignments: true`. All four already ship in the starter — don't regress.
 11. **Border radii are tokens.** Use `var(--wp--custom--radius--sm|md|lg|pill)`. Add or adjust slugs under `settings.custom.radius` in `theme.json` if the design needs them. No raw `px` radii in patterns.
 12. **Parts are static HTML — no PHP.** Dynamic content rendered from a part must go through a pattern reference: `<!-- wp:pattern {"slug":"<slug>/_name"} /-->`. `patterns/_copyright.php` is the worked example; `parts/footer.html` shows the include.
-13. **Navigation.** Use `core/navigation` — never custom menu markup. Inline `<!-- wp:navigation /-->` in a part (as `parts/header.html` ships today) is the canonical FSE seed: WordPress auto-promotes it to a `wp_navigation` post on first load, after which the `ref` becomes authoritative. One menu per nav region.
+13. **Navigation.** Use `core/navigation` — never custom menu markup. Inline `<!-- wp:navigation /-->` in a part (as `parts/header.html` ships today) is acceptable seed markup; when no `ref` is supplied, WordPress may create and render a fallback `wp_navigation` post so the nav renders at all. The file-based inline block is not automatically rewritten — to make a menu the single editable source of truth, add `"ref":<id>` to the block pointing at the desired `wp_navigation` post. One menu per nav region.
 14. **Do not repurpose `core/search` as a subscribe CTA.** Its `backgroundColor` applies to the input AND the button, which almost never matches the design. Build the subscribe row as a flex `group` → styled input-shaped `group` + `core/button`. Flag the wiring as `TODO(content): email service provider`.
 15. **Structural accessibility (from the starter, already in place — don't regress).**
-    - Every template renders `<!-- wp:pattern {"slug":"<slug>/a11y-skip-link"} /-->` as its first block.
-    - Every template's `<main>` has `id="wp--skip-link--target"`.
+    - WordPress 6.9 auto-injects the block-theme skip link; every template's `<main>` already has `id="wp--skip-link--target"` so the injected anchor lands there. Do not add a second skip-link pattern.
+    - `.skip-link` focus styling lives in `assets/main.scss` — token-driven so the theme palette applies to core's injected link.
     - `:focus-visible` on buttons AND links, non-transparent color, ≥2px outline. Defined in `theme.json` `styles.elements` so every style variation inherits.
     - Contrast: ≥4.5:1 body, ≥3:1 large text (WCAG AA).
 16. **Style variations.** `styles/*.json` must be rewritten against the new palette, or explicitly deferred in Findings.
@@ -135,7 +135,7 @@ Also capture:
 
 ## Files you may NOT edit
 
-- `templates/*.html` — the skip-link first-block and `<main id="wp--skip-link--target">` are already correct. Leave them.
+- `templates/*.html` — `<main id="wp--skip-link--target">` is already correct; core's auto-injected skip link lands there. Leave the templates untouched.
 - `functions.php`, `composer.json`, `package.json`, `phpcs.xml.dist`, `bin/verify-theme.sh`, `.github/workflows/*`.
 
 ## Verification — two-stage delivery gates
@@ -146,7 +146,7 @@ Also capture:
   - The verify script wraps: contract greps (hex/rgb/px/clamp/fluid:true/customTemplates-on-disk/front-page-is-thin), comment grammar (`TODO(kind)` only), `lint`, `lint:css`, `phpcs`, `phpstan`, and finally `a11y`.
 - `preview_inspect` assertions pass for every section at 1440 and 390.
 - `preview_console_logs` clean; `preview_network` no 404s (fonts especially).
-- Fresh-checkout render shows the skip link on first Tab press and reaches `#wp--skip-link--target` on activation.
+- Fresh-checkout render shows core's auto-injected skip link on first Tab press and reaches `#wp--skip-link--target` on activation.
 - Every `TODO(kind)` enumerated in Findings, grouped by kind.
 
 **Project delivery** (adds real a11y audit):
