@@ -164,6 +164,39 @@ else
 	fail "node not found on PATH (cannot check fontSize presets)"
 fi
 
+# Every assets/fonts/ reference in theme.json fontFamilies[].fontFace[].src
+# points at a real file. Only fires when the theme declares custom faces —
+# system stacks (sans-serif / serif / monospace) are a no-op.
+if command -v node > /dev/null; then
+	if font_output=$(node -e '
+		const theme = require("./theme.json");
+		const fs = require("fs");
+		const fams = ((theme.settings || {}).typography || {}).fontFamilies || [];
+		const missing = [];
+		for (const f of fams) {
+			const faces = f.fontFace || [];
+			for (const face of (Array.isArray(faces) ? faces : [faces])) {
+				const srcs = face.src || [];
+				for (const src of (Array.isArray(srcs) ? srcs : [srcs])) {
+					if (typeof src !== "string") continue;
+					const m = src.match(/(?:file:)?(\.?\/?assets\/fonts\/[^"\s)]+)/);
+					if (!m) continue;
+					const rel = m[1].replace(/^\.\//, "");
+					if (!fs.existsSync(rel)) missing.push(rel + " (family: " + (f.slug || "?") + ")");
+				}
+			}
+		}
+		if (missing.length) { console.log(missing.join("\n")); process.exit(1); }
+	' 2>&1); then
+		pass "theme.json assets/fonts/ references resolve (or none declared)"
+	else
+		fail "theme.json references missing font files:"
+		printf "%s\n" "$font_output" | sed 's/^/    /'
+	fi
+else
+	fail "node not found on PATH (cannot check font references)"
+fi
+
 # ---------------------------------------------------------------------------
 # 9. Every customTemplates entry has a file on disk.
 # ---------------------------------------------------------------------------
@@ -228,9 +261,9 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Standard tool stack (lint, phpcs, phpstan).
+# Standard tool stack (build, lint, phpcs, phpstan).
 # ---------------------------------------------------------------------------
-section "Lint / phpcs / phpstan"
+section "Build / lint / phpcs / phpstan"
 
 run() {
 	local label="$1"; shift
@@ -244,6 +277,7 @@ run() {
 }
 
 if command -v npm > /dev/null; then
+	run "npm run build"     npm run --silent build
 	run "npm run lint"      npm run --silent lint
 	run "npm run lint:css"  npm run --silent lint:css
 else

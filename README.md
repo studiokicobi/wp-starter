@@ -23,6 +23,8 @@ This is stricter than both WordPress core (which only requires PHP 7.4 in WP 7.0
 
 **Do not use this template as a base for projects targeting legacy shared hosts.** Fork a different starter for those.
 
+Dependabot alerts on this template currently trace to `@wordpress/*` transitive dependencies — they clear when upstream releases a bump and are safe to accept as-is.
+
 ### Tested against
 
 | Package | Version |

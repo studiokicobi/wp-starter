@@ -39,7 +39,7 @@ Build the homepage for [PROJECT NAME] as a WordPress block theme, visually match
 
 | Asset kind | Source |
 |---|---|
-| Fonts | **Must be `provided`** — checked into `assets/fonts/` before the build starts. Cannot be agent-generated or stubbed. A missing font blocks the build. |
+| Fonts | **Non-system fonts must be `provided`** — if the design uses custom web fonts, they must be checked into `assets/fonts/` before the build starts. Cannot be agent-generated or stubbed. System font stacks (the default `sans-serif`, `serif`, `monospace` families in `theme.json`) require no assets. |
 | Content imagery (hero, cards) | `provided` preferred. Otherwise ship a flat color-on-color PNG at correct aspect ratio, tagged `TODO(content): final [section] image`. |
 | Decorative chrome (backgrounds, dividers, shapes) | `theme.json` tokens or SVG in `assets/` referenced via `get_theme_file_uri()`. Never the media library. |
 | Brand/interface marks (social icons, decorative SVGs) | `get_theme_file_uri()` — see docs/media-conventions.md. |
@@ -80,6 +80,18 @@ Build-specific additions for this prompt (non-negotiable, but not in the verify 
     - Contrast: ≥4.5:1 body, ≥3:1 large text (WCAG AA).
 16. **Style variations.** `styles/*.json` must be rewritten against the new palette, or explicitly deferred in Findings.
 17. **i18n.** All user-facing strings go through `esc_html__()` / `esc_attr__()` with `'<slug>'`. No bare strings.
+
+## Exceptions
+
+If the design legitimately requires something the Technical Contract forbids (a custom block, a new CSS file, raw `clamp()` in markup, inline `<style>`, custom JS, a `wp:html` block, a repurposed `core/search`, anything else flagged "reject" under Common Failure Modes) — **STOP. Do not code the violation silently.**
+
+In Findings, log:
+
+1. The rule you would violate, by number or name.
+2. What the design requires and why the contracted alternative does not satisfy it.
+3. Your proposed exemption — scope (this build only vs. every future build) and the smallest deviation that works.
+
+Wait for an explicit spec amendment before proceeding. A logged exception is a healthy finding; an unlogged deviation is a regression.
 
 ## Terminology disambiguation
 

@@ -110,3 +110,11 @@ See [docs/conventions.md](docs/conventions.md) for the full grammar. Summary:
 - `TODO(kind):` is the only TODO form. Kinds are `copy`, `design`, `content`, `a11y`, `perf`. `FIXME`, `XXX`, `HACK` are not accepted — rewrite them as `TODO(kind):` with the appropriate kind.
 - `[UPPERCASE]` in brackets inside docs/prompts is a placeholder for substitution. Never ship content with a placeholder still visible.
 - `wp-starter/…` slugs in docs are literal for this repo but stand for `<slug>/…` when reading docs from a renamed project. When writing new docs that will outlive the rename, prefer `<slug>/…` explicitly.
+
+## Skill pack caveats
+
+The skills in `.claude/skills/` are vendored from [WordPress/agent-skills](https://github.com/WordPress/agent-skills) and are ecosystem-wide. A few upstream defaults are superseded by this repo:
+
+- **PHP floor.** Skill guidance cites a PHP 7.2.24+ floor. This repo requires **PHP 8.3+** (see README *Hosting baseline*). Write for 8.3 — typed properties, constructor promotion, first-class callable syntax are fine.
+- **WordPress floor.** Skills target broad compatibility. This repo requires **WordPress 6.9+**, which means per-block-style variations in `theme.json`, focus-state styling under `styles.elements`, fluid typography, and inline `core/navigation` auto-promotion to `wp_navigation` all work natively — prefer them over older polyfill patterns.
+- **Don't edit the vendored files.** `.claude/skills/*` is overwritten by the installer documented in the README. Repo-specific overrides, tightened rules, or local conventions belong in this `CLAUDE.md` or `docs/*.md` — never inside `.claude/skills/`.

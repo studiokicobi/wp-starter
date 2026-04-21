@@ -154,7 +154,7 @@ fi
 echo "Next manual steps:"
 echo "  1. Edit style.css: update Theme Name, Description, Author, Author URI, Tags, Theme URI."
 echo "  2. Edit composer.json: update the vendor prefix of the 'name' field if needed."
-echo "  3. Edit package.json: update the repository/bugs/homepage URLs."
+echo "  3. Edit package.json: update the 'author', 'homepage', 'repository.url', and 'bugs.url' fields."
 echo "  4. Rename the theme directory on disk to '${NEW_SLUG}'."
 echo "  5. Regenerate .pot/.mo files in languages/ if carried over."
 echo "  6. Run 'npm run verify' to confirm nothing drifted."
