@@ -112,7 +112,7 @@ The agent instructions enforce a nine-item [Technical Contract](CLAUDE.md#block-
 
 ### Using with an AI agent
 
-Copy the prompt in [docs/prompts/homepage-build.md](docs/prompts/homepage-build.md), fill the `[…]` fields, and hand it to the agent. The prompt enforces the Technical Contract and runs `npm run verify` (including the a11y gate) before handing back.
+The homepage build spec lives at [docs/homepage-build-spec.md](docs/homepage-build-spec.md). Fill the `[…]` fields in the paste-block and hand it to the agent. The spec enforces the Technical Contract and runs `npm run verify` (including the a11y gate) before handing back. It also doubles as human documentation of how the homepage was architected — read it without pasting if you're onboarding onto a project.
 
 Both skill directories were installed from [WordPress/agent-skills](https://github.com/WordPress/agent-skills). To update when new skills ship upstream:
 

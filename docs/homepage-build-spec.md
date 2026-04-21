@@ -1,10 +1,12 @@
-# Homepage build prompt
+# Homepage build spec
 
-Paste the block below into your AI agent (Claude Code, Codex, etc.) when starting a new homepage build on a project created from `wp-starter`. The placeholders in `[UPPERCASE]` brackets are the only things you should edit.
+Build specification for the homepage on a project based on `wp-starter`. It captures the design intent (tokens, composition, a11y), the Technical Contract the build must satisfy, the delivery gates, and the failure modes to reject.
 
-This prompt is opinionated on purpose: it steers the agent onto the nine-item Technical Contract in [CLAUDE.md](../../CLAUDE.md), the three-layer composition model in [docs/pattern-composition.md](../pattern-composition.md), the role-not-format media rule in [docs/media-conventions.md](../media-conventions.md), and the slug/placeholder/TODO grammar in [docs/conventions.md](../conventions.md). Do not loosen the rules — they are what make the output reusable.
+The block below is the canonical form handed to an AI coding agent (Claude Code, Codex, etc.) to execute the build — fill the `[UPPERCASE]` fields and paste. The same document doubles as human-readable documentation of how the homepage was architected: read it without pasting if you're onboarding onto the project.
 
-> **One sentence for users:** Copy this prompt, fill the `[…]` fields, and hand it to the agent.
+This spec is opinionated on purpose: it steers the agent onto the nine-item Technical Contract in [CLAUDE.md](../CLAUDE.md), the three-layer composition model in [docs/pattern-composition.md](pattern-composition.md), the role-not-format media rule in [docs/media-conventions.md](media-conventions.md), and the slug/placeholder/TODO grammar in [docs/conventions.md](conventions.md). Do not loosen the rules — they are what make the output reusable.
+
+> **One sentence for users:** Copy this spec, fill the `[…]` fields, and hand it to the agent.
 
 ---
 
@@ -181,22 +183,22 @@ Return one message at end of build. Tag each item by delivery gate.
 
 ---
 
-## Using the prompt
+## Using the spec
 
-Fill these inputs in the paste-block above before running the prompt:
+Fill these inputs in the paste-block above before running the spec:
 
 - **`[PROJECT NAME]`** — project display name.
 - **`[REFERENCE]`** — path to image, live URL, or Figma file.
 - **Reference type** — `image`, `live-url`, or `figma`. `figma` requires Dev Mode MCP access.
 - **Copy** — verbatim text per section. Omit a section and the agent ships placeholder copy marked `TODO(copy): …`.
 - **Brand tokens** — authoritative hex values, type scale, spacing scale. These override any eyedropping from the reference.
-- **Fonts** — must be checked into `assets/fonts/` *before* you run the prompt. The build will not start without them.
+- **Fonts** — must be checked into `assets/fonts/` *before* you run the spec. The build will not start without them.
 - **Style variations** — list each (e.g. `dark`) or mark deferred.
 - **Target environment** — `studio` for solo/short, `wp-env` for team/CI.
 
 Fill every `[UPPERCASE]` placeholder before pasting — `grep '\[[A-Z][A-Z-]+\]' prompt.md` must return nothing. The agent is told to refuse and ask for values rather than guess.
 
-The `<slug>` token you'll see in the prompt body is not an input. It's the theme slug set by `npm run rename -- <your-slug>` during project setup, and the agent reads it from `style.css` Text Domain and `composer.json`.
+The `<slug>` token you'll see in the spec body is not an input. It's the theme slug set by `npm run rename -- <your-slug>` during project setup, and the agent reads it from `style.css` Text Domain and `composer.json`.
 
 ### The result
 
@@ -215,7 +217,7 @@ One message at the end of the build with five numbered items, each tagged `[Prev
 
 ### How to read Findings
 
-Every open item is a `TODO(kind):` comment. Kinds, per [docs/conventions.md](../conventions.md):
+Every open item is a `TODO(kind):` comment. Kinds, per [docs/conventions.md](conventions.md):
 
 - `TODO(copy): …` — placeholder copy; you owe the final editorial text.
 - `TODO(design): …` — a design decision is still open (color, spacing, imagery).
@@ -227,10 +229,10 @@ Regenerate the list any time with `grep -rn 'TODO(' patterns templates parts ass
 
 If Findings is empty, nothing is pending. If it's long, triage by kind before approving Project delivery — especially anything under `TODO(a11y)` or `TODO(copy)`.
 
-### When to edit the prompt vs. the inputs
+### When to edit the spec vs. the inputs
 
 - **Edit inputs** for: this specific build's copy, tokens, reference, variations.
-- **Edit the prompt** for: new structural rules that should apply to *every* build (a new guardrail, a new contract item). Prompt edits belong in version control alongside the starter theme, and should move together with [CLAUDE.md](../../CLAUDE.md) and [bin/verify-theme.sh](../../bin/verify-theme.sh) — the three stay in sync or the agent drifts.
+- **Edit the spec** for: new structural rules that should apply to *every* build (a new guardrail, a new contract item). Spec edits belong in version control alongside the starter theme, and should move together with [CLAUDE.md](../CLAUDE.md) and [bin/verify-theme.sh](../bin/verify-theme.sh) — the three stay in sync or the agent drifts.
 
 ### Common failure modes
 
