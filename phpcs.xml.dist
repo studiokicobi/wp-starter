@@ -34,4 +34,16 @@
 			</property>
 		</properties>
 	</rule>
+
+	<!--
+		Patterns with a leading underscore are "internal" — either composed
+		into other patterns (e.g. _section-*) or included from a template
+		part for dynamic content (e.g. _copyright). The underscore sorts
+		them together in the file listing and signals "don't insert me
+		directly." This is intentional and not a WordPress-filename-
+		convention violation.
+	-->
+	<rule ref="WordPress.Files.FileName.NotHyphenatedLowercase">
+		<exclude-pattern>patterns/_*.php</exclude-pattern>
+	</rule>
 </ruleset>

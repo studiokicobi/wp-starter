@@ -1,0 +1,26 @@
+<!--
+	Front page template.
+
+	This template is intentionally thin. It wires the header, main landmark,
+	and footer, and delegates the entire page body to a single composite
+	pattern (`wp-starter/home`), which in turn references the per-section
+	patterns. See docs/pattern-composition.md for the "template wires,
+	patterns compose" contract.
+
+	Do not add content to this file. To change the homepage:
+	  - reorder sections       → edit patterns/home.php
+	  - change section content → edit patterns/_section-<name>.php
+	  - add a new section      → create patterns/_section-<new>.php and
+	                             reference it from patterns/home.php
+-->
+<!-- wp:pattern {"slug":"wp-starter/a11y-skip-link"} /-->
+
+<!-- wp:template-part {"slug":"header","tagName":"header","className":"site-header"} /-->
+
+<!-- wp:group {"tagName":"main","anchor":"wp--skip-link--target"} -->
+<main id="wp--skip-link--target" class="wp-block-group">
+	<!-- wp:pattern {"slug":"wp-starter/home"} /-->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer","className":"site-footer"} /-->

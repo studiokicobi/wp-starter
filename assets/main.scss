@@ -22,6 +22,32 @@ footer.site-footer {
 }
 
 /**
+ * Accessibility: skip-link. Hidden off-screen by default via
+ * .screen-reader-text (provided by WordPress core); pinned to the
+ * top-left on focus.
+ */
+
+.skip-link {
+	background: var(--wp--preset--color--foreground, #000);
+	color: var(--wp--preset--color--background, #fff);
+	font-size: var(--wp--preset--font-size--small, 1rem);
+	padding: var(--wp--preset--spacing--30, 1rem) var(--wp--preset--spacing--40, 1.5rem);
+	text-decoration: none;
+
+	&:focus,
+	&:focus-visible {
+		clip: auto !important;
+		clip-path: none !important;
+		height: auto !important;
+		position: fixed;
+		top: var(--wp--preset--spacing--30, 1rem);
+		left: var(--wp--preset--spacing--30, 1rem);
+		width: auto !important;
+		z-index: 100000;
+	}
+}
+
+/**
  * Accessibility: honour user motion preferences.
  */
 

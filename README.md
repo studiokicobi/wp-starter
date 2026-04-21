@@ -44,16 +44,30 @@ Enabling and verifying GitHub's **Template repository** flag is a manual reposit
 
 ## Rename checklist (mandatory on every new project)
 
-The template ships with the slug `wp-starter` everywhere. Every generated project must rename these in one pass, in order:
+The template ships with the slug `wp-starter` everywhere. **Use the rename script** — doing this by hand is error-prone (the rename touches ~9 files including pattern slugs inside PHP).
+
+```bash
+npm run rename -- acme-client
+```
+
+The script performs the following edits in one pass:
 
 1. **Theme slug** — lowercase, dashes only, no underscores (e.g. `acme-client`, not `acme_client` or `AcmeClient`).
-2. **Text domain** = theme slug exactly. WordPress convention: text domain must match the theme folder slug and be lowercase with dashes. Search-replace `'wp-starter'` → `'<slug>'` across `functions.php`, templates, and any PHP that calls `__()` / `_e()` / `esc_html__()` etc.
-3. **Function prefix** — slug converted to `snake_case` (PHP identifiers can't contain dashes). Search-replace `wp_starter_` → `<slug_snake>_` across `functions.php`.
-4. **`style.css` header** — `Theme Name`, `Text Domain` (= slug), `Description`, `Author`, `Author URI`, `Tags`.
-5. **`composer.json`** — update `name` field.
-6. **`phpcs.xml.dist`** — update the `text_domain` property on `WordPress.WP.I18n` and the `prefixes` property on `WordPress.NamingConventions.PrefixAllGlobals`.
-7. **Directory on disk** — the theme folder name must equal the slug.
-8. **Translation files** — regenerate `.pot` / `.mo` in `languages/` if you carry them over.
+2. **Text domain** = theme slug. Replaces `'wp-starter'` → `'<slug>'` in every PHP i18n call.
+3. **Function prefix** — slug converted to `snake_case`. Replaces `wp_starter_` → `<slug_snake>_`.
+4. **Pattern slugs** — every `wp-starter/…` pattern slug becomes `<slug>/…` in both pattern headers and template `wp:pattern` references.
+5. **`style.css` header** — updates `Text Domain` and `Theme URI`.
+6. **`composer.json`** — updates `name` field (`vendor/<slug>`).
+7. **`phpcs.xml.dist`** — updates the `text_domain` and `prefixes` properties.
+8. **`package.json`** — updates `name` field.
+
+After running, manually review:
+
+- **Directory on disk** — the theme folder name must equal the slug.
+- **`style.css`** — `Theme Name`, `Description`, `Author`, `Author URI`, `Tags` are project-specific and not auto-edited.
+- **Translation files** — regenerate `.pot` / `.mo` in `languages/` if you carry them over.
+
+Run `npm run verify` afterwards to confirm nothing drifted.
 
 ## Scripts
 
@@ -64,6 +78,8 @@ npm run lint           # lint JS (same as lint:js; matches the PostToolUse hook)
 npm run lint:js        # lint JS
 npm run lint:css       # lint SCSS/CSS
 npm run format         # format source/docs (honours .prettierignore)
+npm run verify         # block theme standards + lint + phpcs + phpstan
+npm run rename -- <slug> # rename the theme slug across every file that references it
 npm run env:start      # boot wp-env (latest stable WordPress, theme mounted)
 npm run env:stop
 npm run env:cli -- ... # run WP-CLI inside wp-env, e.g. `npm run env:cli -- plugin list`
@@ -84,6 +100,19 @@ This repo is set up for two assistants in parallel:
 
 - **Claude Code** reads [CLAUDE.md](CLAUDE.md) and the skills in `.claude/skills/`.
 - **Codex** reads [AGENTS.md](AGENTS.md) and the skills in `.codex/skills/`.
+
+### Block theme standards
+
+The agent instructions enforce a nine-item [Technical Contract](CLAUDE.md#block-theme-standards) — tokens, fluid type, template/pattern separation, role-based media, and others. Supporting docs:
+
+- [docs/pattern-composition.md](docs/pattern-composition.md) — how templates, page patterns, and section patterns fit together.
+- [docs/media-conventions.md](docs/media-conventions.md) — the role-not-format rule for images, SVGs, and fonts.
+- [docs/weight-vs-size-terminology.md](docs/weight-vs-size-terminology.md) — disambiguating "medium" across size, weight, and spacing.
+- [docs/conventions.md](docs/conventions.md) — slug substitution, `[PLACEHOLDER]` grammar, and the `TODO(kind):` comment vocabulary.
+
+### Using with an AI agent
+
+Copy the prompt in [docs/prompts/homepage-build.md](docs/prompts/homepage-build.md), fill the `[…]` fields, and hand it to the agent. The prompt enforces the Technical Contract and runs `npm run verify` (including the a11y gate) before handing back.
 
 Both skill directories were installed from [WordPress/agent-skills](https://github.com/WordPress/agent-skills). To update when new skills ship upstream:
 
@@ -136,9 +165,10 @@ Reusable blocks and non-theme-specific features belong in a **separate companion
 
 ## Accessibility
 
-- **Skip link** — WordPress core injects the block-theme skip link automatically for block themes when the template output includes a `main` landmark. No extra theme markup or enqueue code is needed in this starter.
+- **Skip link** — every template renders [patterns/a11y-skip-link.php](patterns/a11y-skip-link.php) as its first block, pointing at `#wp--skip-link--target` which is the `id` on every template's `<main>`. Focus styling lives in [assets/main.scss](assets/main.scss). The pattern supersedes WordPress core's automatic skip link so the theme owns the behavior explicitly.
 - **Reduced motion** — [assets/main.scss](assets/main.scss) honours `prefers-reduced-motion: reduce` and neutralises animations/transitions for users who request it.
-- **Focus styles** — button and link `:focus-visible` outlines are defined in [theme.json](theme.json) and inherited by every style variation (see [styles/dark.json](styles/dark.json) for the pattern).
+- **Focus styles** — button *and* link `:focus-visible` outlines are defined in [theme.json](theme.json) and inherited by every style variation (see [styles/dark.json](styles/dark.json) for the pattern).
+- **Automated a11y gate** — `npm run a11y` is wired into `npm run verify` and **fails by default until the project configures a real tool** (pa11y, axe, lighthouse-ci, etc). This is intentional — new repos must not ship with the a11y check silently passing. Edit the `a11y` script in [package.json](package.json) to point at your chosen tool.
 
 ## License
 

@@ -45,3 +45,25 @@ jobs:
             - run: composer install --prefer-dist --no-progress --no-interaction
             - run: composer phpcs
             - run: composer phpstan
+
+    verify:
+        name: Verify (block theme standards)
+        runs-on: ubuntu-latest
+        needs: [node, php]
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
+
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.3'
+                  tools: composer:v2
+                  coverage: none
+
+            - run: npm ci
+            - run: composer install --prefer-dist --no-progress --no-interaction
+            - run: bin/verify-theme.sh

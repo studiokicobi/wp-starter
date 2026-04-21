@@ -11,9 +11,9 @@
  */
 
 ?>
-<!-- wp:cover {"isUserOverlayColor":true,"customOverlayColor":"#212529","minHeight":60,"minHeightUnit":"vh","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","right":"var:preset|spacing|40","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40"}}}} -->
+<!-- wp:cover {"isUserOverlayColor":true,"customOverlayColor":"var:preset|color|secondary","minHeight":60,"minHeightUnit":"vh","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","right":"var:preset|spacing|40","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40"}}}} -->
 <div class="wp-block-cover alignfull" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--40);min-height:60vh">
-	<span aria-hidden="true" class="wp-block-cover__background has-background-dim-100 has-background-dim" style="background-color:#212529"></span>
+	<span aria-hidden="true" class="wp-block-cover__background has-background-dim-100 has-background-dim" style="background-color:var(--wp--preset--color--secondary)"></span>
 	<div class="wp-block-cover__inner-container">
 		<!-- wp:heading {"textAlign":"center","level":1,"textColor":"white"} -->
 		<h1 class="wp-block-heading has-text-align-center has-white-color has-text-color"><?php echo esc_html__( 'A headline that sets the tone', 'wp-starter' ); ?></h1>

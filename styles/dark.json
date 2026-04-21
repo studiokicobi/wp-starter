@@ -79,6 +79,14 @@
 					"typography": {
 						"textDecoration": "underline"
 					}
+				},
+				":focus-visible": {
+					"outline": {
+						"color": "var(--wp--preset--color--white)",
+						"style": "solid",
+						"width": "2px",
+						"offset": "2px"
+					}
 				}
 			}
 		}

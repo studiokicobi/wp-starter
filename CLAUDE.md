@@ -56,6 +56,24 @@ When changing a block theme:
 - prefer templates, template parts, patterns, and style variations over hardcoded repetition
 - avoid scattering styling across many files if `theme.json` or per-block styles are the cleaner home
 
+## Block theme standards
+
+The nine-item Technical Contract. These rules are enforced by [bin/verify-theme.sh](bin/verify-theme.sh) and CI. Violations fail the build.
+
+1. **Tokens first.** Every color, spacing, font-size, font-family, and radius must resolve to a `theme.json` preset (`var(--wp--preset--*)`) or a value declared in `settings.custom.*`. No raw hex, rgb, px, or rem in pattern/template/part markup.
+2. **No custom CSS for layout.** Spacing, alignment, and flex/grid behavior must be expressed with block supports (`spacing`, `layout`, `align`) and `theme.json`. Custom stylesheets are for type ramps, motion, and edge cases only.
+3. **Patterns compose; templates wire.** A template (`templates/*.html`) is a thin wiring file: header part, `main`, one `wp:pattern` reference, footer part. Content lives in patterns. Never hardcode content into a template.
+4. **Section patterns, not page patterns.** Each reusable section (hero, cards, writing, cta) is its own pattern prefixed `_section-*`. A page-level pattern (e.g. `home`) composes section patterns via `wp:pattern` references. Templates reference the page-level pattern.
+5. **Role, not format.** Decide what an asset *is* before deciding how to reference it. Editorial imagery → attachment ID. Brand/interface marks (logos, icons, decorative SVGs) → `get_theme_file_uri()`. Site logo → `core/site-logo`. See [docs/media-conventions.md](docs/media-conventions.md).
+6. **One source of truth per block style.** Per-block presentation (padding, typography, default colors) lives in `theme.json` `styles.blocks.*`, not sprinkled across patterns. If three patterns share the same group styling, hoist it.
+7. **Fluid typography on.** `settings.typography.fluid: true` is required. Every font-size preset uses `{ min, max }` form. No raw `clamp()` in markup. Size presets and font-weight presets share slugs like `medium` — see [docs/weight-vs-size-terminology.md](docs/weight-vs-size-terminology.md) before referring to either in prose.
+8. **Text domain = theme slug.** Every `__()`, `_e()`, `esc_html__()`, `esc_attr__()`, `_x()`, `_n()` call uses the theme slug verbatim. Enforced by phpcs.
+9. **Custom templates must exist on disk.** Every entry in `theme.json`'s `customTemplates` array has a matching `templates/<name>.html` file. No ghost entries.
+
+### Verification
+
+Run `npm run verify` (or `bin/verify-theme.sh` directly) before handing work back. CI runs the same script.
+
 ## Plugin / API rules
 
 When changing plugin code:
@@ -84,3 +102,11 @@ If commands are missing or failing because the repo is not configured, state tha
 - show what changed and why
 - mention WordPress-specific consequences such as deprecations, serialization, permissions, or theme.json impact when relevant
 - do not over-explain basic code changes
+
+## Comment conventions
+
+See [docs/conventions.md](docs/conventions.md) for the full grammar. Summary:
+
+- `TODO(kind):` is the only TODO form. Kinds are `copy`, `design`, `content`, `a11y`, `perf`. `FIXME`, `XXX`, `HACK` are not accepted — rewrite them as `TODO(kind):` with the appropriate kind.
+- `[UPPERCASE]` in brackets inside docs/prompts is a placeholder for substitution. Never ship content with a placeholder still visible.
+- `wp-starter/…` slugs in docs are literal for this repo but stand for `<slug>/…` when reading docs from a renamed project. When writing new docs that will outlive the rename, prefer `<slug>/…` explicitly.

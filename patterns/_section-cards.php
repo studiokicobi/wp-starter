@@ -1,0 +1,57 @@
+<?php
+/**
+ * Title: Section — Cards
+ * Slug: wp-starter/section-cards
+ * Categories: featured, columns
+ * Description: Three-column feature/card grid. Replace headings, copy, and links per project.
+ * Keywords: cards, features, grid, columns
+ * Viewport Width: 1280
+ *
+ * @package wp-starter
+ */
+
+?>
+<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","bottom":"var:preset|spacing|70","right":"var:preset|spacing|40","left":"var:preset|spacing|40"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--70);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--70);padding-left:var(--wp--preset--spacing--40)">
+	<!-- wp:heading {"textAlign":"center","level":2} -->
+	<h2 class="wp-block-heading has-text-align-center"><?php echo esc_html__( 'What we do', 'wp-starter' ); ?></h2>
+	<!-- /wp:heading -->
+
+	<!-- wp:columns {"align":"wide","style":{"spacing":{"blockGap":{"top":"var:preset|spacing|50","left":"var:preset|spacing|50"}}}} -->
+	<div class="wp-block-columns alignwide">
+		<!-- wp:column -->
+		<div class="wp-block-column">
+			<!-- wp:heading {"level":3} -->
+			<h3 class="wp-block-heading"><?php echo esc_html__( 'First thing', 'wp-starter' ); ?></h3>
+			<!-- /wp:heading -->
+			<!-- wp:paragraph -->
+			<p><?php echo esc_html__( 'One or two sentences about this capability.', 'wp-starter' ); ?></p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column -->
+		<div class="wp-block-column">
+			<!-- wp:heading {"level":3} -->
+			<h3 class="wp-block-heading"><?php echo esc_html__( 'Second thing', 'wp-starter' ); ?></h3>
+			<!-- /wp:heading -->
+			<!-- wp:paragraph -->
+			<p><?php echo esc_html__( 'One or two sentences about this capability.', 'wp-starter' ); ?></p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:column -->
+
+		<!-- wp:column -->
+		<div class="wp-block-column">
+			<!-- wp:heading {"level":3} -->
+			<h3 class="wp-block-heading"><?php echo esc_html__( 'Third thing', 'wp-starter' ); ?></h3>
+			<!-- /wp:heading -->
+			<!-- wp:paragraph -->
+			<p><?php echo esc_html__( 'One or two sentences about this capability.', 'wp-starter' ); ?></p>
+			<!-- /wp:paragraph -->
+		</div>
+		<!-- /wp:column -->
+	</div>
+	<!-- /wp:columns -->
+</div>
+<!-- /wp:group -->
