@@ -31,6 +31,29 @@ if ( ! function_exists( 'wp_starter_theme_support' ) ) {
 	remove_action( 'enqueue_block_editor_assets', 'gutenberg_enqueue_block_editor_assets_block_directory' );
 }
 
+if ( ! function_exists( 'wp_starter_register_block_styles' ) ) {
+	/**
+	 * Register block style variations.
+	 *
+	 * The `section` variation on core/group hoists the shared
+	 * top/bottom/horizontal padding used by every homepage section
+	 * (cards, writing, cta). Patterns opt in with
+	 * `"className":"is-style-section"`.
+	 *
+	 * @return void
+	 */
+	function wp_starter_register_block_styles() {
+		register_block_style(
+			'core/group',
+			array(
+				'name'  => 'section',
+				'label' => __( 'Section', 'wp-starter' ),
+			)
+		);
+	}
+	add_action( 'init', 'wp_starter_register_block_styles' );
+}
+
 if ( ! function_exists( 'wp_starter_get_main_asset_data' ) ) {
 	/**
 	 * Get the dependency and version metadata for the compiled main bundle.

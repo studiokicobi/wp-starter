@@ -62,7 +62,7 @@ Nine items from CLAUDE.md — enforced by `bin/verify-theme.sh`. Do not relax.
 4. **Section patterns, not page patterns.** Each reusable section is its own pattern prefixed `_section-` (`patterns/_section-hero.php`, `_section-cards.php`, etc.). A page-level pattern (`patterns/home.php`) composes them via `wp:pattern` references. Templates reference the page-level pattern.
 5. **Role, not format.** Editorial imagery → attachment ID. Brand/interface marks → `get_theme_file_uri()`. Site logo → `core/site-logo`.
 6. **One source of truth per block style.** Per-block presentation lives in `theme.json` `styles.blocks.*`, not sprinkled across patterns. If three patterns share the same group styling, hoist it.
-7. **Fluid typography on.** `settings.typography.fluid: true`. Every font-size preset uses `{ min, max }` form. No raw `clamp()` in patterns/templates/parts.
+7. **Fluid typography on.** `settings.typography.fluid: true`. Every heading-sized font-size preset (size > 1rem) uses `{ min, max }` form; body-scale presets (≤1rem) can be fixed. No raw `clamp()` in patterns/templates/parts.
 8. **Text domain = theme slug.** Every `__()`, `_e()`, `esc_html__()`, `esc_attr__()`, `_x()`, `_n()` call uses the slug verbatim.
 9. **Custom templates must exist on disk.** Every entry in `theme.json`'s `customTemplates` array has a matching `templates/<name>.html` file.
 
@@ -71,7 +71,7 @@ Build-specific additions for this prompt (non-negotiable, but not in the verify 
 10. **Global settings baseline.** `settings.color.defaultPalette: false`, `settings.spacing.defaultSpacingSizes: false`, `settings.appearanceTools: true`, `settings.useRootPaddingAwareAlignments: true`. All four already ship in the starter — don't regress.
 11. **Border radii are tokens.** Use `var(--wp--custom--radius--sm|md|lg|pill)`. Add or adjust slugs under `settings.custom.radius` in `theme.json` if the design needs them. No raw `px` radii in patterns.
 12. **Parts are static HTML — no PHP.** Dynamic content rendered from a part must go through a pattern reference: `<!-- wp:pattern {"slug":"<slug>/_name"} /-->`. `patterns/_copyright.php` is the worked example; `parts/footer.html` shows the include.
-13. **Navigation.** Use `wp_navigation` CPT referenced by `ref` in `core/navigation`. One menu per nav region.
+13. **Navigation.** Use `core/navigation` — never custom menu markup. Inline `<!-- wp:navigation /-->` in a part (as `parts/header.html` ships today) is the canonical FSE seed: WordPress auto-promotes it to a `wp_navigation` post on first load, after which the `ref` becomes authoritative. One menu per nav region.
 14. **Do not repurpose `core/search` as a subscribe CTA.** Its `backgroundColor` applies to the input AND the button, which almost never matches the design. Build the subscribe row as a flex `group` → styled input-shaped `group` + `core/button`. Flag the wiring as `TODO(content): email service provider`.
 15. **Structural accessibility (from the starter, already in place — don't regress).**
     - Every template renders `<!-- wp:pattern {"slug":"<slug>/a11y-skip-link"} /-->` as its first block.

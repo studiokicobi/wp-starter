@@ -11,8 +11,8 @@
  */
 
 ?>
-<!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|70","right":"var:preset|spacing|40","bottom":"var:preset|spacing|70","left":"var:preset|spacing|40"}}},"backgroundColor":"secondary","textColor":"background","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull has-background-color has-secondary-background-color has-text-color has-background" style="padding-top:var(--wp--preset--spacing--70);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--70);padding-left:var(--wp--preset--spacing--40)">
+<!-- wp:group {"align":"full","className":"is-style-section","backgroundColor":"secondary","textColor":"background","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull is-style-section has-background-color has-secondary-background-color has-text-color has-background">
 	<!-- wp:heading {"textAlign":"center","level":2} -->
 	<h2 class="wp-block-heading has-text-align-center"><?php echo esc_html__( 'Ready when you are', 'wp-starter' ); ?></h2>
 	<!-- /wp:heading -->

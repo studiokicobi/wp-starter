@@ -138,6 +138,32 @@ else
 	pass "no raw clamp() in patterns/templates/parts"
 fi
 
+# Every rem-denominated fontSize preset larger than 1rem must carry a
+# { min, max } fluid object. Body-scale presets (≤1rem) are exempt — fluid
+# body text is a pessimization. Non-rem sizes are skipped (separate rule).
+if command -v node > /dev/null; then
+	if preset_output=$(node -e '
+		const theme = require("./theme.json");
+		const sizes = ((theme.settings || {}).typography || {}).fontSizes || [];
+		const out = [];
+		for (const p of sizes) {
+			const m = /^([\d.]+)rem$/.exec(p.size || "");
+			if (!m) continue;
+			if (parseFloat(m[1]) > 1 && (!p.fluid || typeof p.fluid !== "object")) {
+				out.push(p.slug + ": size " + p.size + " but no fluid { min, max } object");
+			}
+		}
+		if (out.length) { console.log(out.join("\n")); process.exit(1); }
+	' 2>&1); then
+		pass "every heading-sized fontSize preset has a fluid object"
+	else
+		fail "fontSize presets missing fluid object (required when size > 1rem):"
+		printf "%s\n" "$preset_output" | sed 's/^/    /'
+	fi
+else
+	fail "node not found on PATH (cannot check fontSize presets)"
+fi
+
 # ---------------------------------------------------------------------------
 # 9. Every customTemplates entry has a file on disk.
 # ---------------------------------------------------------------------------
@@ -225,8 +251,8 @@ else
 fi
 
 if command -v composer > /dev/null; then
-	run "composer phpcs"    composer --quiet phpcs
-	run "composer phpstan"  composer --quiet phpstan
+	run "composer phpcs"    composer phpcs
+	run "composer phpstan"  composer phpstan
 else
 	fail "composer not found on PATH"
 fi
