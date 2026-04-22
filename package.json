@@ -29,6 +29,13 @@
 		"path": "^0.12.7",
 		"webpack-remove-empty-scripts": "^1.0.4"
 	},
+	"overrides": {
+		"lodash": "^4.18.1",
+		"serialize-javascript": "^7.0.5",
+		"markdownlint-cli": {
+			"minimatch": "^3.1.2"
+		}
+	},
 	"scripts": {
 		"start": "wp-scripts start",
 		"start:blocks": "wp-scripts start --webpack-src-dir=src/blocks --output-path=build/blocks --config node_modules/@wordpress/scripts/config/webpack.config.js",

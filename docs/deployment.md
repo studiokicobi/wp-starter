@@ -88,6 +88,12 @@ jobs:
 
 For deploys, use the host's recommended flow rather than running `rsync` or `scp` directly — every host has an atomic-swap story that avoids half-deployed states.
 
+## Dependency audit posture
+
+Every dev dep in this repo is transitively used by `@wordpress/scripts`, `@wordpress/env`, or `pa11y-ci` — three direct deps that are already pinned at their latest major. Dependabot alerts on transitives are inevitable while upstream ships the next release. None of the packages in `devDependencies` are runtime deps of the theme (the shipped artifact is `build/main.{js,css}`), so a CVE in `webpack-dev-server` or `lodash` is a build-machine/CI exposure, not a production one.
+
+`package.json` ships an `overrides` block that pins newer patched versions for a few transitives where the upgrade is low-risk (`lodash`, `serialize-javascript`, `markdownlint-cli`'s `minimatch`). Alerts that would require a major downgrade of a direct dep (e.g. `webpack-dev-server` 4 → 5 via a `@wordpress/scripts` downgrade) are intentionally left to upstream — revisit them when `@wordpress/scripts` cuts a new major. If a new override is warranted, run `npm audit` to confirm the fix version, add the pin, and re-run `npm run verify` before committing.
+
 ## First deploy — step by step
 
 1. **Provision the host.** Fresh WordPress install, admin user created, site URL configured.
