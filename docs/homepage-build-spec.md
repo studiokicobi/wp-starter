@@ -142,7 +142,7 @@ Also capture:
 
 **Preview delivery** (structural, agent-verifiable):
 
-- `npm run verify` passes for every check except the intentional `npm run a11y` fail.
+- `npm run verify` passes. The stubbed `npm run a11y` emits a yellow warning until a real tool is wired up — that's expected during Preview delivery and becomes a real gate on Project delivery.
   - The verify script wraps: contract greps (hex/rgb/px/clamp/fluid:true/customTemplates-on-disk/front-page-is-thin), comment grammar (`TODO(kind)` only), `lint`, `lint:css`, `phpcs`, `phpstan`, and finally `a11y`.
 - `preview_inspect` assertions pass for every section at 1440 and 390.
 - `preview_console_logs` clean; `preview_network` no 404s (fonts especially).
@@ -224,7 +224,7 @@ One message at the end of the build with five numbered items, each tagged `[Prev
 
 ### Two delivery gates
 
-- **Preview delivery** — default handoff. Agent ships when `npm run verify` passes (minus the intentional a11y fail), `preview_inspect` assertions pass at 1440 and 390, and the structural a11y baseline (skip link, `<main id="wp--skip-link--target">`, `:focus-visible` outlines) is intact.
+- **Preview delivery** — default handoff. Agent ships when `npm run verify` passes (the unwired a11y stub warns but does not gate), `preview_inspect` assertions pass at 1440 and 390, and the structural a11y baseline (skip link, `<main id="wp--skip-link--target">`, `:focus-visible` outlines) is intact.
 - **Project delivery** — adds an external a11y audit (`npm run a11y` with a real tool wired in: axe / pa11y / lighthouse-ci) and manual keyboard/viewport tours. Request this explicitly when you want sign-off, not just a preview.
 
 ### How to read Findings

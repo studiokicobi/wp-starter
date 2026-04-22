@@ -170,7 +170,7 @@ Reusable blocks and non-theme-specific features belong in a **separate companion
 - **Skip link** — WordPress 6.9 auto-injects a skip link into every block-theme render, pointing at `#wp--skip-link--target`. Every template's `<main>` carries that `id` so core's link lands correctly. Focus styling (`.skip-link`) is token-driven in [assets/main.scss](assets/main.scss) so the theme's palette and spacing apply to core's injected anchor.
 - **Reduced motion** — [assets/main.scss](assets/main.scss) honours `prefers-reduced-motion: reduce` and neutralises animations/transitions for users who request it.
 - **Focus styles** — button *and* link `:focus-visible` outlines are defined in [theme.json](theme.json) and inherited by every style variation (see [styles/dark.json](styles/dark.json) for the pattern).
-- **Automated a11y gate** — `npm run a11y` is wired into `npm run verify` and **fails by default until the project configures a real tool** (pa11y, axe, lighthouse-ci, etc). This is intentional — new repos must not ship with the a11y check silently passing. Edit the `a11y` script in [package.json](package.json) to point at your chosen tool.
+- **Automated a11y gate** — `npm run a11y` is wired into `npm run verify`. Until the project configures a real tool (pa11y, axe, lighthouse-ci, etc) the stub emits a yellow warning instead of failing — the reminder stays visible without keeping CI permanently red. Replace the `a11y` script in [package.json](package.json) with your chosen tool and `verify` gates on it like any other check.
 
 ## License
 

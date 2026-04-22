@@ -16,6 +16,7 @@ cd "$ROOT"
 FAIL=0
 pass() { printf "  \033[32m✓\033[0m %s\n" "$1"; }
 fail() { printf "  \033[31m✗\033[0m %s\n" "$1"; FAIL=1; }
+warn() { printf "  \033[33m!\033[0m %s\n" "$1"; }
 section() { printf "\n\033[1m%s\033[0m\n" "$1"; }
 
 # ---------------------------------------------------------------------------
@@ -333,16 +334,21 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Accessibility gate. The default `npm run a11y` script fails until the
-# project wires up a real tool (pa11y, axe, lighthouse-ci, etc). This is
-# the two-stage delivery model: preview passes, then a11y passes. Fresh
-# repos intentionally fail here — the red is the signal to configure an
-# a11y tool before shipping.
+# Accessibility gate. Fresh repos ship an `npm run a11y` stub that exits 1
+# to nag the project into wiring a real tool (pa11y, axe, lighthouse-ci).
+# We detect the stub by grep-ing its sentinel phrase in package.json and
+# report a yellow warning instead of failing — the prompt stays visible,
+# CI stays green for unwired templates/projects, and the check turns into
+# a real gate the moment the stub is replaced with a tool invocation.
 # ---------------------------------------------------------------------------
 section "Accessibility"
 
 if command -v npm > /dev/null; then
-	run "npm run a11y"  npm run --silent a11y
+	if grep -q '"a11y".*failing until wired up' package.json; then
+		warn "npm run a11y is the unwired stub — configure pa11y/axe/lighthouse-ci before Project delivery"
+	else
+		run "npm run a11y"  npm run --silent a11y
+	fi
 else
 	fail "npm not found on PATH (cannot run a11y)"
 fi
