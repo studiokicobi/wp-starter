@@ -110,7 +110,7 @@ For "structured editorial content with a rigid schema" (author card, pricing tie
 <!-- /wp:heading -->
 ```
 
-Editors configure the field group in ACF's UI, drop the pattern into a post, and the heading pulls `author_name`. No custom React, no `render.php`. See [docs/acf-pro-setup.md](acf-pro-setup.md) for the ACF side.
+Editors configure the field group in ACF's UI, drop the pattern into a post, and the heading pulls `author_name`. No custom React, no `render.php`. Full worked examples (author card, post meta, custom sources) in [docs/block-bindings.md](block-bindings.md); ACF setup in [docs/acf-pro-setup.md](acf-pro-setup.md).
 
 Use bindings when the **shape** is fixed (heading + paragraph + image) but the **data** is editorial. Use a custom block when the rendering logic itself is non-trivial (loops, conditional markup, Interactivity API).
 

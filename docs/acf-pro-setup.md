@@ -162,3 +162,11 @@ npm run env:cli -- eval 'var_dump( defined( "ACF_PRO_LICENSE" ) );'
 If the plugin appears but says **Please enter license key** in the
 admin, the constant isn't reaching PHP — check the `config` block in
 `.wp-env.override.json` and restart `wp-env`.
+
+## Using ACF fields in block patterns
+
+ACF Pro 6.3+ registers an `acf/field` block-binding source on every
+install. That means pattern markup can bind a `core/heading`,
+`core/paragraph`, or `core/image` directly to an ACF field — no custom
+block required. See [docs/block-bindings.md](block-bindings.md) for
+worked examples (author card, post meta, custom sources).

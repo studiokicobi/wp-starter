@@ -156,6 +156,8 @@ The scaffold generates `src/blocks/author-card/` with `block.json`, `index.js`, 
 
 Reusable blocks that should outlive the theme belong in a **companion plugin**, not here. See [docs/block-authoring.md](docs/block-authoring.md#theme-bound-vs-plugin-block) for the rule.
 
+For the middle ground — a pattern with fixed shape but dynamic data (author card, pricing tier, meta display) — use **block bindings**. [docs/block-bindings.md](docs/block-bindings.md) covers `acf/field`, `core/post-meta`, and how to register custom binding sources.
+
 ## Project shape
 
 ```
@@ -204,6 +206,10 @@ The inserter is pre-trimmed to match a design-system-first workflow. [functions.
 - **Openverse** — the external media category. Local media library is untouched.
 
 [theme.json](theme.json) additionally disables the **custom color, gradient, font-size, and spacing pickers**, so editors can only pick from this theme's presets — no one-off hex values drifting the design system. Delete the relevant lines if a project needs any of them back.
+
+## Deploying
+
+Deployment specifics for the environments this template targets — host-by-host notes, env var conventions, the post-rename checklist, and a minimal CI workflow — live in [docs/deployment.md](docs/deployment.md).
 
 ## ACF Pro
 
