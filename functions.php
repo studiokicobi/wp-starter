@@ -125,6 +125,36 @@ if ( ! function_exists( 'wp_starter_register_block_styles' ) ) {
 	add_action( 'init', 'wp_starter_register_block_styles' );
 }
 
+if ( ! function_exists( 'wp_starter_load_post_types' ) ) {
+	/**
+	 * Auto-load custom post type registrations from inc/post-types/.
+	 *
+	 * Each `inc/post-types/<slug>.php` is required once on functions.php
+	 * load; the files themselves register their `init` hook. Scaffold new
+	 * post types with `npm run cpt:new -- <slug>`.
+	 *
+	 * Theme-coupled by design: if a project needs CPTs to survive theme
+	 * swaps, move the generated file to a must-use plugin — the code is
+	 * portable. See docs/post-types.md.
+	 *
+	 * @return void
+	 */
+	function wp_starter_load_post_types() {
+		$dir = __DIR__ . '/inc/post-types';
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+		$files = glob( $dir . '/*.php' );
+		if ( false === $files ) {
+			return;
+		}
+		foreach ( $files as $file ) {
+			require_once $file;
+		}
+	}
+	wp_starter_load_post_types();
+}
+
 if ( ! function_exists( 'wp_starter_get_main_asset_data' ) ) {
 	/**
 	 * Get the dependency and version metadata for the compiled main bundle.

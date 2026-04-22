@@ -42,6 +42,7 @@
 		"verify": "./bin/verify-theme.sh",
 		"rename": "./bin/rename-theme.sh",
 		"block:new": "./bin/new-block.sh",
+		"cpt:new": "./bin/new-cpt.sh",
 		"a11y": "echo 'configure a11y tool in package.json a11y script (e.g. pa11y, axe, lighthouse-ci) — failing until wired up' && exit 1",
 		"env:start": "wp-env start",
 		"env:stop": "wp-env stop",

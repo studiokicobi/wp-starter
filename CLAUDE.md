@@ -64,6 +64,17 @@ When changing a block theme:
 - prefer templates, template parts, patterns, and style variations over hardcoded repetition
 - avoid scattering styling across many files if `theme.json` or per-block styles are the cleaner home
 
+## Custom post type rules
+
+When a project needs a custom post type:
+- consider the ACF Pro UI path first (see [docs/post-types.md](docs/post-types.md)) — code scaffolding is for structural/non-editorial CPTs or projects that value everything-in-git
+- scaffold code-registered CPTs with `npm run cpt:new -- <slug>` — do not hand-write the registration
+- slug is the singular form, lowercase, dashes only (`case-study`, not `CaseStudy` or `case_study`)
+- scaffolded files land in `inc/post-types/<slug>.php` and auto-load via `wp_starter_load_post_types()` in [functions.php](functions.php) — no manual require
+- always set `show_in_rest: true` so the block editor and block bindings can see the post type
+- after adding or changing a rewrite slug, flush permalinks (`wp rewrite flush` or re-save Settings → Permalinks) — stale rewrites surface as 404s on archive pages
+- if a project needs CPTs to survive theme switches, move the generated file to a must-use plugin — the registration code is portable unchanged
+
 ## Block theme standards
 
 The nine-item Technical Contract. These rules are enforced by [bin/verify-theme.sh](bin/verify-theme.sh) and CI. Violations fail the build.

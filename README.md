@@ -80,6 +80,7 @@ npm run build          # production build — theme assets + blocks
 npm run build:theme    # theme assets only
 npm run build:blocks   # blocks only (skips cleanly if src/blocks/ is empty)
 npm run block:new -- <slug> # scaffold a theme-bound block at src/blocks/<slug>/
+npm run cpt:new -- <slug>   # scaffold a custom post type at inc/post-types/<slug>.php
 npm run lint           # lint JS (same as lint:js; matches the PostToolUse hook)
 npm run lint:js        # lint JS
 npm run lint:css       # lint SCSS/CSS
@@ -158,6 +159,14 @@ Reusable blocks that should outlive the theme belong in a **companion plugin**, 
 
 For the middle ground — a pattern with fixed shape but dynamic data (author card, pricing tier, meta display) — use **block bindings**. [docs/block-bindings.md](docs/block-bindings.md) covers `acf/field`, `core/post-meta`, and how to register custom binding sources.
 
+## Custom post types
+
+```bash
+npm run cpt:new -- case-study
+```
+
+Generates `inc/post-types/case-study.php` with a full i18n-ready `register_post_type()` call; the file auto-loads via `wp_starter_load_post_types()` in [functions.php](functions.php). Theme-coupled by default — move to a must-use plugin when the site needs CPTs to survive theme swaps. [docs/post-types.md](docs/post-types.md) walks through the ACF UI vs. code decision, taxonomies, post meta + block bindings, and common rewrite gotchas.
+
 ## Project shape
 
 ```
@@ -180,8 +189,11 @@ wp-starter/
 ├── bin/
 │   ├── build-blocks.sh       # compiles src/blocks/ → build/blocks/
 │   ├── new-block.sh          # scaffolds a theme-bound block
+│   ├── new-cpt.sh            # scaffolds a custom post type under inc/post-types/
 │   ├── rename-theme.sh
 │   └── verify-theme.sh
+├── inc/
+│   └── post-types/<slug>.php # CPT registrations (auto-loaded)
 ├── scripts/
 │   └── ai-after-edit.sh      # lint hook
 ├── theme.json                # v3 — primary styling/config
