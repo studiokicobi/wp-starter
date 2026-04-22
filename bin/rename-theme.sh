@@ -102,8 +102,14 @@ for f in "${TARGETS[@]}"; do
 	perl -pi -e "s/'${OLD_SLUG}'/'${NEW_SLUG}'/g" "$f"
 	# "wp-starter"      (JSON package names, JSON block attrs)
 	perl -pi -e "s/\"${OLD_SLUG}\"/\"${NEW_SLUG}\"/g" "$f"
-	# wp-starter/       (pattern slugs: Slug: wp-starter/foo  and  {"slug":"wp-starter/foo"})
-	perl -pi -e "s#\b${OLD_SLUG}/#${NEW_SLUG}/#g" "$f"
+	# wp-starter/       (pattern slugs in several contexts:
+	#   - PHP header:          Slug: wp-starter/foo
+	#   - block attribute:     {"slug":"wp-starter/foo"}
+	#   - doc comment:         `wp-starter/foo`
+	# A negative lookbehind on `/` blocks URL path segments like
+	# https://github.com/owner/wp-starter/issues — the template's origin
+	# repo URLs must survive rename.)
+	perl -pi -e "s#(?<!/)${OLD_SLUG}/#${NEW_SLUG}/#g" "$f"
 	# /wp-starter"      (composer vendor/package: "vendor/wp-starter")
 	perl -pi -e "s#/${OLD_SLUG}\"#/${NEW_SLUG}\"#g" "$f"
 	# wp-starter-       (enqueue handles: 'wp-starter-style' → quoted form handled above, but handle the tail)

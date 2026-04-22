@@ -2,13 +2,8 @@
 	'use strict';
 
 	// Switching to mobile: https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList/onchange
-	const isMobile = window.matchMedia(
-		'(max-width: ' +
-			window
-				.getComputedStyle( document.body )
-				.getPropertyValue( '--custom--media-max-width--sm' ) +
-			')'
-	);
+	// 782px matches WordPress's admin-bar / editor mobile breakpoint.
+	const isMobile = window.matchMedia( '(max-width: 782px)' );
 	const navigationResponsiveContainer = document.querySelector(
 		'.site-header .wp-block-navigation__responsive-container'
 	);

@@ -1,12 +1,12 @@
 # Translations
 
-Generate / update the `.pot` template via WP-CLI inside `wp-env`:
+Generate / update the `.pot` template via WP-CLI inside `wp-env`. Replace
+`<slug>` with your project's theme slug (the value set by
+`npm run rename -- <slug>`, also in `style.css` Text Domain):
 
 ```bash
-npm run env:cli -- i18n make-pot . languages/wp-starter.pot --slug=wp-starter --domain=wp-starter
+npm run env:cli -- i18n make-pot . languages/<slug>.pot --slug=<slug> --domain=<slug>
 ```
-
-Then replace `wp-starter` everywhere with your project slug (text domain).
 
 Drop `.po` / `.mo` files for target locales alongside `.pot`. WordPress 6.5+
 auto-loads bundled translations from this directory via `load_theme_textdomain()`
