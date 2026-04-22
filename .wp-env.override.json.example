@@ -1,0 +1,8 @@
+{
+	"plugins": [
+		"https://connect.advancedcustomfields.com/index.php?a=download&p=pro&k=YOUR_ACF_PRO_LICENSE&t=http%3A%2F%2Flocalhost%3A8888"
+	],
+	"config": {
+		"ACF_PRO_LICENSE": "YOUR_ACF_PRO_LICENSE"
+	}
+}

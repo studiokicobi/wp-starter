@@ -176,6 +176,17 @@ The inserter is pre-trimmed to match a design-system-first workflow. [functions.
 
 [theme.json](theme.json) additionally disables the **custom color, gradient, font-size, and spacing pickers**, so editors can only pick from this theme's presets — no one-off hex values drifting the design system. Delete the relevant lines if a project needs any of them back.
 
+## ACF Pro
+
+Project work typically uses [Advanced Custom Fields Pro](https://www.advancedcustomfields.com/) for custom post types, field groups, and options pages. The template ships the integration scaffolding — a `.wp-env.override.json.example` for local installs and a full recipe at [docs/acf-pro-setup.md](docs/acf-pro-setup.md) covering:
+
+- Local `wp-env` flow (copy the example override, paste your license, `env:start`)
+- Production install options (project-level Composer via ACF's endpoint, or host-uploaded plugin)
+- License activation via the `ACF_PRO_LICENSE` constant
+- How to avoid the wp.org **Secure Custom Fields** (SCF) fork swap that was introduced in October 2024
+
+The template does **not** bundle the plugin or commit your license. `auth.json` and `.wp-env.override.json` are both gitignored.
+
 ## Accessibility
 
 - **Skip link** — WordPress 6.9 auto-injects a skip link into every block-theme render, pointing at `#wp--skip-link--target`. Every template's `<main>` carries that `id` so core's link lands correctly. Focus styling (`.skip-link`) is token-driven in [assets/main.scss](assets/main.scss) so the theme's palette and spacing apply to core's injected anchor.

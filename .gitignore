@@ -14,6 +14,9 @@
 # wp-env
 .wp-env.override.json
 
+# Composer auth (ACF Pro endpoint, private Composer repos)
+auth.json
+
 # Composer / PHPStan / PHPCS caches
 /.phpunit.cache/
 /.phpcs-cache
