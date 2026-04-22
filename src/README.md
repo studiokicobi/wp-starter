@@ -1,32 +1,51 @@
 # `src/` — theme-bound block source
 
-**Reusable blocks don't belong here.** Build those in a companion plugin so they
-survive theme switches. `WordPress.org` guidance:
-<https://developer.wordpress.org/block-editor/getting-started/fundamentals/registration-of-a-block/>
+Theme-bound blocks live under `src/blocks/<slug>/`. Each directory is a single
+block; the scaffold command creates one end-to-end. Full guide:
+[docs/block-authoring.md](../docs/block-authoring.md).
 
-Use this directory only for **theme-bound** source (blocks or variations that
-only make sense inside *this* theme):
-
-```
-src/
-└── example-block/
-    ├── block.json      # points "editorScript": "file:./index.js" etc.
-    ├── edit.js
-    ├── save.js
-    ├── index.js
-    └── style.scss
-```
-
-The current starter does **not** auto-discover `src/**/block.json`, generate a
-`blocks-manifest.php`, or register blocks from this directory automatically.
-Right now the build only compiles the theme's shared frontend assets:
+## Scaffolding
 
 ```bash
-npm run start   # watch assets/main.js + assets/main.scss → build/
-npm run build   # production build for assets/main.js + assets/main.scss → build/
+npm run block:new -- author-card
 ```
 
-If a project later needs theme-bound blocks here, expand the build pipeline and
-register the compiled block output from `functions.php` as part of that work.
-Until then, treat `src/` as a reserved placeholder rather than a live block
-scaffold.
+Generates:
+
+```
+src/blocks/author-card/
+├── block.json     # apiVersion 3, "name":"<theme-slug>/author-card", category "theme"
+├── index.js       # registerBlockType + Edit import
+├── edit.js        # functional Edit component using useBlockProps
+└── render.php     # dynamic server render using get_block_wrapper_attributes()
+```
+
+Slug rules (enforced by `bin/new-block.sh`): lowercase, dashes only,
+starts with a letter. `author-card` ✓, `AuthorCard` ✗, `author_card` ✗.
+
+## Build
+
+```bash
+npm run build           # compiles src/blocks/ → build/blocks/ as part of the full build
+npm run build:blocks    # blocks only
+npm run start:blocks    # watch mode for blocks
+```
+
+Blocks auto-register via `wp_starter_register_blocks()` in
+[`functions.php`](../functions.php), which scans `build/blocks/*/block.json` on
+`init`. No per-block PHP wiring required.
+
+## What belongs here — and what doesn't
+
+**Theme-bound (here):** blocks tightly coupled to this theme's design tokens,
+patterns, or template parts. They disappear when the theme is swapped.
+
+**Reusable (not here — use a companion plugin):** blocks that should outlive
+the theme, travel across projects, or be installed independently. See
+[WordPress's own guidance](https://developer.wordpress.org/block-editor/getting-started/fundamentals/registration-of-a-block/)
+on block registration homes.
+
+Before scaffolding a block at all, check the decision table in
+[docs/block-authoring.md](../docs/block-authoring.md) — most custom-block
+requests are better served by a pattern, a block style variation, or block
+bindings to ACF fields.

@@ -22,9 +22,10 @@ Start with classification, then use the matching skill:
 
 Unless the task says otherwise:
 
-- prefer plugin-first reusable blocks
+- prefer **pattern → block style variation → ACF binding → custom block** in that order (see [docs/block-authoring.md](docs/block-authoring.md)) — most "custom block" asks are better served upstream
+- if a custom block is warranted: reusable / cross-project blocks live in a companion plugin; theme-bound blocks (coupled to this theme's tokens, patterns, or templates) live in `src/blocks/<slug>/` and are scaffolded with `npm run block:new -- <slug>`
 - use `block.json`
-- keep server + client block registration
+- default to dynamic blocks (server render via `render.php`) over static blocks with a `save()` — no deprecation treadmill
 - use `theme.json` as the primary configuration layer for block themes
 - prefer patterns / template parts / supports / style variations over bespoke duplicate code
 - prefer the Interactivity API for block-level frontend interactions
@@ -47,6 +48,13 @@ When changing a block:
 - consider whether a deprecation is needed
 - consider editor and frontend behavior separately
 - prefer supports and metadata to custom controls where possible
+
+When creating a theme-bound block:
+- scaffold with `npm run block:new -- <slug>` — do not hand-create the four files
+- slug is lowercase, dashes only (`author-card`, not `AuthorCard` or `author_card`)
+- never hand-edit files under `build/blocks/` — they're compiled output; edit `src/blocks/<slug>/` and run `npm run build`
+- no manual `register_block_type()` call is needed — `wp_starter_register_blocks()` in [functions.php](functions.php) auto-registers every `build/blocks/*/block.json` on `init`
+- the scaffold generates a dynamic block (`render.php`, no `save.js`) — only add `save.js` if the block genuinely outputs static HTML, and accept the deprecation-maintenance burden that comes with it
 
 ## Theme-specific rules
 

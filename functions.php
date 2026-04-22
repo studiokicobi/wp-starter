@@ -72,6 +72,36 @@ if ( ! function_exists( 'wp_starter_disable_openverse' ) ) {
 	add_filter( 'block_editor_settings_all', 'wp_starter_disable_openverse' );
 }
 
+if ( ! function_exists( 'wp_starter_register_blocks' ) ) {
+	/**
+	 * Auto-register theme-bound blocks compiled to build/blocks/.
+	 *
+	 * Each `src/blocks/<slug>/block.json` becomes
+	 * `build/blocks/<slug>/block.json` after `npm run build`.
+	 * register_block_type reads the metadata and the render.php reference
+	 * directly — no per-block PHP wiring needed. Scaffold new blocks with
+	 * `npm run block:new -- <slug>`.
+	 *
+	 * @return void
+	 */
+	function wp_starter_register_blocks() {
+		$blocks_dir = __DIR__ . '/build/blocks';
+		if ( ! is_dir( $blocks_dir ) ) {
+			return;
+		}
+		$block_dirs = glob( $blocks_dir . '/*', GLOB_ONLYDIR );
+		if ( false === $block_dirs ) {
+			return;
+		}
+		foreach ( $block_dirs as $block_dir ) {
+			if ( is_file( $block_dir . '/block.json' ) ) {
+				register_block_type( $block_dir );
+			}
+		}
+	}
+	add_action( 'init', 'wp_starter_register_blocks' );
+}
+
 if ( ! function_exists( 'wp_starter_register_block_styles' ) ) {
 	/**
 	 * Register block style variations.

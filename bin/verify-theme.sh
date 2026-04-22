@@ -240,6 +240,34 @@ elif [ $missing -eq 0 ]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Theme-bound blocks — every src/blocks/<slug>/block.json must have a matching
+# build/blocks/<slug>/block.json. wp_starter_register_blocks() in
+# functions.php only sees the compiled tree, so a source block without a
+# build is silently unregistered until someone runs `npm run build`. Catch
+# drift here instead of in the editor.
+# ---------------------------------------------------------------------------
+section "Theme-bound blocks compiled"
+
+if [ -d src/blocks ]; then
+	src_blocks=$(find src/blocks -mindepth 2 -maxdepth 2 -name block.json 2>/dev/null || true)
+	if [ -z "$src_blocks" ]; then
+		pass "no theme-bound blocks declared"
+	else
+		missing_builds=0
+		for src_manifest in $src_blocks; do
+			slug=$(basename "$(dirname "$src_manifest")")
+			if [ ! -f "build/blocks/${slug}/block.json" ]; then
+				fail "src/blocks/${slug} has no compiled build/blocks/${slug}/block.json — run 'npm run build'"
+				missing_builds=1
+			fi
+		done
+		[ $missing_builds -eq 0 ] && pass "every src/blocks/<slug> has a compiled build/blocks/<slug>"
+	fi
+else
+	pass "src/blocks/ not present (no theme-bound blocks)"
+fi
+
+# ---------------------------------------------------------------------------
 # Style variations — every styles/*.json file must parse. Broken variation
 # JSON silently degrades to "no variation available" in the editor; catch
 # it here so it isn't discovered at project delivery.

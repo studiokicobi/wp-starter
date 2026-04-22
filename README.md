@@ -74,8 +74,12 @@ Run `npm run verify` afterwards to confirm nothing drifted.
 ## Scripts
 
 ```bash
-npm run start          # wp-scripts dev build (watches assets/)
-npm run build          # production build
+npm run start          # watch theme assets (assets/main.{js,scss})
+npm run start:blocks   # watch theme-bound blocks (src/blocks/**)
+npm run build          # production build — theme assets + blocks
+npm run build:theme    # theme assets only
+npm run build:blocks   # blocks only (skips cleanly if src/blocks/ is empty)
+npm run block:new -- <slug> # scaffold a theme-bound block at src/blocks/<slug>/
 npm run lint           # lint JS (same as lint:js; matches the PostToolUse hook)
 npm run lint:js        # lint JS
 npm run lint:css       # lint SCSS/CSS
@@ -91,10 +95,12 @@ composer phpcbf        # auto-fix PHPCS issues where possible
 composer phpstan       # PHPStan level 6 with WordPress stubs
 ```
 
-Current build scope: `npm run start` and `npm run build` compile
-`assets/main.js` and `assets/main.scss` into `build/`. Theme-bound blocks under
-`src/` are optional future scaffolding and are **not** auto-discovered,
-manifest-generated, or auto-registered by this starter today.
+Build scope: `npm run build` runs `build:theme` (compiles `assets/main.{js,scss}`
+into `build/`) and then `build:blocks` (compiles `src/blocks/*/block.json` into
+`build/blocks/` via `@wordpress/scripts`' standard block discovery). Blocks
+auto-register through `wp_starter_register_blocks()` in
+[functions.php](functions.php) on `init`. A fresh repo with no blocks is fine
+— `build:blocks` exits 0 when `src/blocks/` is empty.
 
 ## AI agents
 
@@ -135,6 +141,21 @@ The installer writes into `.claude/skills/` and `.codex/skills/` at the target's
 
 `.claude/settings.json` runs `scripts/ai-after-edit.sh` after Claude's Edit/Write/MultiEdit tools. The script runs `npm run lint` (JS only — fast). Heavier checks (`build`, `phpcs`, `phpstan`) stay as manual scripts; `CLAUDE.md`'s validation order tells the agent when to run them.
 
+## Custom blocks
+
+Most "custom block" requests are better served by a pattern, a block style variation, or ACF block bindings. The full decision table and scaffolding flow live in [docs/block-authoring.md](docs/block-authoring.md).
+
+When a project genuinely needs a theme-bound custom block:
+
+```bash
+npm run block:new -- author-card
+npm run build
+```
+
+The scaffold generates `src/blocks/author-card/` with `block.json`, `index.js`, `edit.js`, and `render.php` (dynamic server render). `npm run build` compiles it to `build/blocks/author-card/`, and `wp_starter_register_blocks()` in [functions.php](functions.php) auto-registers every compiled block on `init` — no per-block PHP wiring.
+
+Reusable blocks that should outlive the theme belong in a **companion plugin**, not here. See [docs/block-authoring.md](docs/block-authoring.md#theme-bound-vs-plugin-block) for the rule.
+
 ## Project shape
 
 ```
@@ -145,12 +166,20 @@ wp-starter/
 │   └── skills/               # WordPress/agent-skills (Claude)
 ├── .codex/
 │   └── skills/               # WordPress/agent-skills (Codex)
-├── assets/                   # main.js, main.scss — build source
-├── build/                    # compiled assets (committed, matches upstream)
+├── assets/                   # main.js, main.scss — theme bundle source
+├── build/                    # compiled output (committed)
+│   ├── main.js/.css/.asset.php
+│   └── blocks/<slug>/        # compiled theme-bound blocks
 ├── parts/                    # template parts
 ├── patterns/                 # starter patterns and template-only content
-├── src/                      # optional placeholder for future theme-bound blocks
+├── src/
+│   └── blocks/<slug>/        # theme-bound block source (scaffold via block:new)
 ├── templates/                # FSE templates
+├── bin/
+│   ├── build-blocks.sh       # compiles src/blocks/ → build/blocks/
+│   ├── new-block.sh          # scaffolds a theme-bound block
+│   ├── rename-theme.sh
+│   └── verify-theme.sh
 ├── scripts/
 │   └── ai-after-edit.sh      # lint hook
 ├── theme.json                # v3 — primary styling/config
