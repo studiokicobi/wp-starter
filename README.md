@@ -165,6 +165,17 @@ wp-starter/
 
 Reusable blocks and non-theme-specific features belong in a **separate companion plugin repo**, not in this theme. Themes swap; plugin-registered blocks survive theme changes. That follows [WordPress's own guidance](https://developer.wordpress.org/block-editor/getting-started/fundamentals/registration-of-a-block/) on where custom blocks should live.
 
+## Editor curation
+
+The inserter is pre-trimmed to match a design-system-first workflow. [functions.php](functions.php) (`wp_starter_curate_editor`) removes:
+
+- **Block directory** — the "search a plugin block" UI. Admins still install plugins through `wp-admin` normally.
+- **Core block patterns** — WordPress's built-in patterns.
+- **Remote block patterns** — the WordPress.org pattern directory.
+- **Openverse** — the external media category. Local media library is untouched.
+
+[theme.json](theme.json) additionally disables the **custom color, gradient, font-size, and spacing pickers**, so editors can only pick from this theme's presets — no one-off hex values drifting the design system. Delete the relevant lines if a project needs any of them back.
+
 ## Accessibility
 
 - **Skip link** — WordPress 6.9 auto-injects a skip link into every block-theme render, pointing at `#wp--skip-link--target`. Every template's `<main>` carries that `id` so core's link lands correctly. Focus styling (`.skip-link`) is token-driven in [assets/main.scss](assets/main.scss) so the theme's palette and spacing apply to core's injected anchor.

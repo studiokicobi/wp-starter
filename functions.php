@@ -25,10 +25,51 @@ if ( ! function_exists( 'wp_starter_theme_support' ) ) {
 		add_theme_support( 'wp-block-styles' );
 	}
 	add_action( 'after_setup_theme', 'wp_starter_theme_support' );
+}
 
-	// Disable Block Directory. See https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/filters/editor-filters.md#block-directory.
-	remove_action( 'enqueue_block_editor_assets', 'wp_enqueue_editor_block_directory_assets' );
-	remove_action( 'enqueue_block_editor_assets', 'gutenberg_enqueue_block_editor_assets_block_directory' );
+if ( ! function_exists( 'wp_starter_curate_editor' ) ) {
+	/**
+	 * Curate the block editor to match the theme's design system.
+	 *
+	 * The inserter only shows what this theme ships — no block directory
+	 * plugin search, no core block patterns, no WordPress.org pattern
+	 * directory. Each removal is one self-contained line; delete any
+	 * that don't fit a given project.
+	 *
+	 * See https://github.com/WordPress/gutenberg/blob/trunk/docs/reference-guides/filters/editor-filters.md#block-directory.
+	 *
+	 * @return void
+	 */
+	function wp_starter_curate_editor() {
+		// Block directory — the "search for a plugin block" UI in the inserter.
+		remove_action( 'enqueue_block_editor_assets', 'wp_enqueue_editor_block_directory_assets' );
+		remove_action( 'enqueue_block_editor_assets', 'gutenberg_enqueue_block_editor_assets_block_directory' );
+
+		// Core block patterns — WordPress's built-in patterns. Keeps the
+		// inserter focused on this theme's own _section-* patterns.
+		remove_theme_support( 'core-block-patterns' );
+	}
+	add_action( 'after_setup_theme', 'wp_starter_curate_editor' );
+
+	// WordPress.org pattern directory — paired with remove_theme_support()
+	// above; both gates must be closed to hide every remote pattern surface.
+	add_filter( 'should_load_remote_block_patterns', '__return_false' );
+}
+
+if ( ! function_exists( 'wp_starter_disable_openverse' ) ) {
+	/**
+	 * Remove the Openverse media category from the block inserter.
+	 *
+	 * Local media library insert/upload/manage flows are untouched.
+	 *
+	 * @param array<string, mixed> $settings Block editor settings passed to the editor.
+	 * @return array<string, mixed>
+	 */
+	function wp_starter_disable_openverse( $settings ) {
+		$settings['enableOpenverseMediaCategory'] = false;
+		return $settings;
+	}
+	add_filter( 'block_editor_settings_all', 'wp_starter_disable_openverse' );
 }
 
 if ( ! function_exists( 'wp_starter_register_block_styles' ) ) {
