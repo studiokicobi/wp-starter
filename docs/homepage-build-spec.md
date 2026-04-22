@@ -69,7 +69,7 @@ Nine items from CLAUDE.md — enforced by `bin/verify-theme.sh`. Do not relax.
 Build-specific additions for this prompt (non-negotiable, but not in the verify grep):
 
 10. **Global settings baseline.** `settings.color.defaultPalette: false`, `settings.spacing.defaultSpacingSizes: false`, `settings.appearanceTools: true`, `settings.useRootPaddingAwareAlignments: true`. All four already ship in the starter — don't regress.
-11. **Border radii are tokens.** Use `var(--wp--custom--radius--sm|md|lg|pill)`. Add or adjust slugs under `settings.custom.radius` in `theme.json` if the design needs them. No raw `px` radii in patterns.
+11. **Border radii are tokens.** Use `var(--wp--custom--radius--none|sm|md|lg|pill)`. Add or adjust slugs under `settings.custom.radius` in `theme.json` if the design needs them. No raw `px` radii in patterns.
 12. **Parts are static HTML — no PHP.** Dynamic content rendered from a part must go through a pattern reference: `<!-- wp:pattern {"slug":"<slug>/_name"} /-->`. `patterns/_copyright.php` is the worked example; `parts/footer.html` shows the include.
 13. **Navigation.** Use `core/navigation` — never custom menu markup. Inline `<!-- wp:navigation /-->` in a part (as `parts/header.html` ships today) is acceptable seed markup; when no `ref` is supplied, WordPress may create and render a fallback `wp_navigation` post so the nav renders at all. The file-based inline block is not automatically rewritten — to make a menu the single editable source of truth, add `"ref":<id>` to the block pointing at the desired `wp_navigation` post. One menu per nav region.
 14. **Do not repurpose `core/search` as a subscribe CTA.** Its `backgroundColor` applies to the input AND the button, which almost never matches the design. Build the subscribe row as a flex `group` → styled input-shaped `group` + `core/button`. Flag the wiring as `TODO(content): email service provider`.
@@ -121,7 +121,7 @@ Also capture:
 - Color token table (slug → value). ΔE measured against the reference where possible.
 - Type scale, with fluid min/max per slug.
 - Spacing scale.
-- Custom radii (`sm`/`md`/`lg`/`pill`).
+- Custom radii (`none`/`sm`/`md`/`lg`/`pill`).
 - Layout sizes (`contentSize`, `wideSize`) and root padding.
 
 ## Files you may edit
