@@ -362,20 +362,35 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Accessibility gate. Fresh repos ship an `npm run a11y` stub that exits 1
-# to nag the project into wiring a real tool (pa11y, axe, lighthouse-ci).
-# We detect the stub by grep-ing its sentinel phrase in package.json and
-# report a yellow warning instead of failing — the prompt stays visible,
-# CI stays green for unwired templates/projects, and the check turns into
-# a real gate the moment the stub is replaced with a tool invocation.
+# Accessibility gate (pa11y-ci). Needs a running WordPress instance — normally
+# wp-env. wp-env defaults to port 8888 but shifts to 8890+ when another
+# project already holds 8888, so we ask wp-env for the real home URL rather
+# than trusting a hardcoded port (which would silently test the other
+# project's site). If wp-env isn't reachable at all we fall back to 8888
+# (the CI case) and then to a warning — verify stays usable for non-a11y
+# workflows. When the server is up, pa11y-ci is a real gate: any WCAG2AA
+# violation fails verify.
 # ---------------------------------------------------------------------------
 section "Accessibility"
 
 if command -v npm > /dev/null; then
-	if grep -q '"a11y".*failing until wired up' package.json; then
-		warn "npm run a11y is the unwired stub — configure pa11y/axe/lighthouse-ci before Project delivery"
+	WP_URL=""
+	if command -v npx > /dev/null 2>&1; then
+		WP_URL=$(
+			npx --silent wp-env run cli wp option get home --skip-themes --skip-plugins 2>/dev/null \
+				| grep -oE '^https?://[^[:space:]]+$' \
+				| head -1 \
+				|| true
+		)
+	fi
+	if [ -z "$WP_URL" ] && curl -fsS --max-time 2 http://localhost:8888/ > /dev/null 2>&1; then
+		WP_URL="http://localhost:8888"
+	fi
+
+	if [ -n "$WP_URL" ] && curl -fsS --max-time 2 "$WP_URL/" > /dev/null 2>&1; then
+		run "pa11y-ci ($WP_URL)"  npx --silent pa11y-ci "$WP_URL/" "$WP_URL/?p=1"
 	else
-		run "npm run a11y"  npm run --silent a11y
+		warn "wp-env not reachable — start it with 'npm run env:start' to exercise the a11y gate"
 	fi
 else
 	fail "npm not found on PATH (cannot run a11y)"

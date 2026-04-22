@@ -25,6 +25,7 @@
 		"@wordpress/prettier-config": "^4.44.0",
 		"@wordpress/scripts": "^32.0.0",
 		"@wordpress/stylelint-config": "^23.36.0",
+		"pa11y-ci": "^4.1.0",
 		"path": "^0.12.7",
 		"webpack-remove-empty-scripts": "^1.0.4"
 	},
@@ -43,7 +44,7 @@
 		"rename": "./bin/rename-theme.sh",
 		"block:new": "./bin/new-block.sh",
 		"cpt:new": "./bin/new-cpt.sh",
-		"a11y": "echo 'configure a11y tool in package.json a11y script (e.g. pa11y, axe, lighthouse-ci) — failing until wired up' && exit 1",
+		"a11y": "pa11y-ci http://localhost:8888/ http://localhost:8888/?p=1",
 		"env:start": "wp-env start",
 		"env:stop": "wp-env stop",
 		"env:destroy": "wp-env destroy",

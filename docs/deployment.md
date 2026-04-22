@@ -78,8 +78,13 @@ jobs:
         with: { php-version: '8.3', tools: composer }
       - run: npm ci
       - run: composer install --prefer-dist --no-progress
+      - run: npm run env:start
       - run: npm run verify
+      - if: always()
+        run: npm run env:stop
 ```
+
+`verify` runs `pa11y-ci` against the live wp-env instance. It asks wp-env for the real home URL (`wp option get home`) because wp-env shifts off the default port 8888 when another project already holds it. If wp-env isn't reachable, the a11y gate degrades to a yellow warning rather than a hard fail, so verify stays usable for non-a11y workflows and CI pipelines that don't boot wp-env. GitHub-hosted runners ship Docker preinstalled, so `npm run env:start` works in the default `ubuntu-latest` image without extra setup.
 
 For deploys, use the host's recommended flow rather than running `rsync` or `scp` directly — every host has an atomic-swap story that avoids half-deployed states.
 

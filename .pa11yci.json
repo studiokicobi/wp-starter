@@ -1,0 +1,10 @@
+{
+	"defaults": {
+		"standard": "WCAG2AA",
+		"timeout": 30000,
+		"includeWarnings": false,
+		"chromeLaunchConfig": {
+			"args": [ "--no-sandbox", "--disable-dev-shm-usage" ]
+		}
+	}
+}
