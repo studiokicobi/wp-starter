@@ -28,8 +28,8 @@ footer.site-footer {
  */
 
 .skip-link {
-	background: var(--wp--preset--color--foreground, #000);
-	color: var(--wp--preset--color--background, #fff);
+	background: var(--wp--preset--color--contrast, #000);
+	color: var(--wp--preset--color--base, #fff);
 	font-size: var(--wp--preset--font-size--small, 1rem);
 	padding: var(--wp--preset--spacing--30, 1rem) var(--wp--preset--spacing--40, 1.5rem);
 	text-decoration: none;

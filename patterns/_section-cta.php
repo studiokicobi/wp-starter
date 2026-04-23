@@ -11,8 +11,8 @@
  */
 
 ?>
-<!-- wp:group {"align":"full","className":"is-style-section","backgroundColor":"secondary","textColor":"background","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull is-style-section has-background-color has-secondary-background-color has-text-color has-background">
+<!-- wp:group {"align":"full","className":"is-style-section","backgroundColor":"contrast-2","textColor":"base","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull is-style-section has-base-color has-contrast-2-background-color has-text-color has-background">
 	<!-- wp:heading {"textAlign":"center","level":2} -->
 	<h2 class="wp-block-heading has-text-align-center"><?php echo esc_html__( 'Ready when you are', 'wp-starter' ); ?></h2>
 	<!-- /wp:heading -->

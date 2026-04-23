@@ -17,16 +17,16 @@
  */
 
 ?>
-<!-- wp:cover {"isUserOverlayColor":true,"overlayColor":"primary","backgroundColor":"primary","minHeight":60,"minHeightUnit":"vh","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","right":"var:preset|spacing|40","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40"}}}} -->
-<div class="wp-block-cover alignfull has-primary-background-color has-background-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--40);min-height:60vh">
-	<span aria-hidden="true" class="wp-block-cover__background has-background-dim-100 has-primary-background-color has-background-dim"></span>
+<!-- wp:cover {"isUserOverlayColor":true,"overlayColor":"contrast","backgroundColor":"contrast","minHeight":60,"minHeightUnit":"vh","align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|80","right":"var:preset|spacing|40","bottom":"var:preset|spacing|80","left":"var:preset|spacing|40"}}}} -->
+<div class="wp-block-cover alignfull has-contrast-background-color has-background-color has-background" style="padding-top:var(--wp--preset--spacing--80);padding-right:var(--wp--preset--spacing--40);padding-bottom:var(--wp--preset--spacing--80);padding-left:var(--wp--preset--spacing--40);min-height:60vh">
+	<span aria-hidden="true" class="wp-block-cover__background has-background-dim-100 has-contrast-background-color has-background-dim"></span>
 	<div class="wp-block-cover__inner-container">
-		<!-- wp:heading {"textAlign":"center","level":1,"textColor":"background"} -->
-		<h1 class="wp-block-heading has-text-align-center has-background-color has-text-color"><?php echo esc_html__( 'A headline that sets the tone', 'wp-starter' ); ?></h1>
+		<!-- wp:heading {"textAlign":"center","level":1,"textColor":"base"} -->
+		<h1 class="wp-block-heading has-text-align-center has-base-color has-text-color"><?php echo esc_html__( 'A headline that sets the tone', 'wp-starter' ); ?></h1>
 		<!-- /wp:heading -->
 
-		<!-- wp:paragraph {"align":"center","textColor":"background","fontSize":"medium"} -->
-		<p class="has-text-align-center has-background-color has-text-color has-medium-font-size"><?php echo esc_html__( 'One supporting sentence that earns the click.', 'wp-starter' ); ?></p>
+		<!-- wp:paragraph {"align":"center","textColor":"base","fontSize":"medium"} -->
+		<p class="has-text-align-center has-base-color has-text-color has-medium-font-size"><?php echo esc_html__( 'One supporting sentence that earns the click.', 'wp-starter' ); ?></p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
