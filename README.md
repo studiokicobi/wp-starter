@@ -84,11 +84,16 @@ npm run cpt:new -- <slug>   # scaffold a custom post type at inc/post-types/<slu
 npm run lint           # lint JS (same as lint:js; matches the PostToolUse hook)
 npm run lint:js        # lint JS
 npm run lint:css       # lint SCSS/CSS
+npm run lint:pkg       # lint package.json against @wordpress/scripts rules
 npm run format         # format source/docs (honours .prettierignore)
-npm run verify         # block theme standards + lint + phpcs + phpstan
-npm run rename -- <slug> # rename the theme slug across every file that references it
+npm run verify         # block theme standards + lint + phpcs + phpstan + pa11y
+npm run a11y           # pa11y-ci against the local wp-env (expects :8888 — verify probes the real port)
+npm run rename -- <slug> [--contributors "foo, bar"] [--theme-uri <url>]
+                       # rename the theme slug across every file that references it; flags fill style.css
 npm run env:start      # boot wp-env (latest stable WordPress, theme mounted)
-npm run env:stop
+npm run env:stop       # stop wp-env containers (data preserved)
+npm run env:destroy    # stop and delete wp-env containers + volumes
+npm run env:clean      # wipe the wp-env database (all environments)
 npm run env:cli -- ... # run WP-CLI inside wp-env, e.g. `npm run env:cli -- plugin list`
 
 composer phpcs         # PHPCS against WordPress Coding Standards
