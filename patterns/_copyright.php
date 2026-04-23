@@ -16,7 +16,7 @@
 		sprintf(
 			/* translators: 1: current year, 2: site title */
 			__( '© %1$s %2$s. All rights reserved.', 'wp-starter' ),
-			gmdate( 'Y' ),
+			wp_date( 'Y' ),
 			get_bloginfo( 'name' )
 		)
 	);
