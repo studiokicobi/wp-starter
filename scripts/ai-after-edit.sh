@@ -4,13 +4,9 @@
 # stay as manual npm/composer scripts.
 set -euo pipefail
 
-if [ -f pnpm-lock.yaml ]; then
-  PM="pnpm"
-elif [ -f bun.lockb ] || [ -f bun.lock ]; then
-  PM="bun"
-else
-  PM="npm"
-fi
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=../bin/_pm-detect.sh
+. "$ROOT_DIR/bin/_pm-detect.sh"
 
 if [ ! -d node_modules ] || [ ! -x "node_modules/.bin/wp-scripts" ]; then
   echo "ai-after-edit: node_modules missing — skipping lint. Run 'npm install' to enable."

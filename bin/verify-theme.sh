@@ -16,6 +16,9 @@ set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
+# shellcheck source=./_pm-detect.sh
+. "$ROOT/bin/_pm-detect.sh"
+
 FAIL=0
 pass() { printf "  \033[32m✓\033[0m %s\n" "$1"; }
 fail() { printf "  \033[31m✗\033[0m %s\n" "$1"; FAIL=1; }
