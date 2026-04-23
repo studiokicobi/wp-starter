@@ -311,7 +311,7 @@ fi
 section "Comment grammar (TODO(kind): only)"
 
 bad_todos=$(
-	{ grep -rEn '\bTODO\b' patterns templates parts assets 2>/dev/null || true; } \
+	{ grep -rEn '\bTODO\b' patterns templates parts assets inc functions.php 2>/dev/null || true; } \
 		| grep -vE 'TODO\((copy|design|content|a11y|perf)\):' \
 		|| true
 )
@@ -322,7 +322,7 @@ else
 	pass "every TODO has a valid kind"
 fi
 
-forbidden=$(grep -rEn '\b(FIXME|XXX|HACK)\b' patterns templates parts assets 2>/dev/null || true)
+forbidden=$(grep -rEn '\b(FIXME|XXX|HACK)\b' patterns templates parts assets inc functions.php 2>/dev/null || true)
 if [ -n "$forbidden" ]; then
 	fail "FIXME/XXX/HACK are forbidden — rewrite as TODO(kind):"
 	printf "%s\n" "$forbidden" | sed 's/^/    /'
