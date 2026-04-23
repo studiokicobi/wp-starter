@@ -53,12 +53,12 @@ if ( ! function_exists( 'wp_starter_curate_editor' ) ) {
 		// Core block patterns — WordPress's built-in patterns. Keeps the
 		// inserter focused on this theme's own _section-* patterns.
 		remove_theme_support( 'core-block-patterns' );
+
+		// WordPress.org pattern directory — paired with remove_theme_support()
+		// above; both gates must be closed to hide every remote pattern surface.
+		add_filter( 'should_load_remote_block_patterns', '__return_false' );
 	}
 	add_action( 'after_setup_theme', 'wp_starter_curate_editor' );
-
-	// WordPress.org pattern directory — paired with remove_theme_support()
-	// above; both gates must be closed to hide every remote pattern surface.
-	add_filter( 'should_load_remote_block_patterns', '__return_false' );
 }
 
 if ( ! function_exists( 'wp_starter_disable_openverse' ) ) {
