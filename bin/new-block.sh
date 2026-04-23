@@ -122,7 +122,7 @@ cat > "$TARGET/render.php" <<PHP
 
 \$wrapper_attributes = get_block_wrapper_attributes();
 ?>
-<div <?php echo \$wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
+<div <?php echo \$wrapper_attributes; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_block_wrapper_attributes() returns a pre-escaped HTML-safe attribute string. ?>>
 	<?php esc_html_e( '${TITLE}', '${THEME_SLUG}' ); ?>
 </div>
 PHP
