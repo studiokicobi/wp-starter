@@ -112,7 +112,7 @@ This repo is set up for two assistants in parallel:
 
 ### Block theme standards
 
-The agent instructions enforce a nine-item [Technical Contract](CLAUDE.md#block-theme-standards) — tokens, fluid type, template/pattern separation, role-based media, and others. Supporting docs:
+The agent instructions define a nine-item [Technical Contract](CLAUDE.md#block-theme-standards) scoped to the homepage/front-page workflow — tokens, fluid type, template/pattern separation, role-based media, and others. See CLAUDE.md for the scope boundary (non-homepage templates and site chrome are exempt from specific items) and for which items are CI-enforced versus review-enforced. Supporting docs:
 
 - [docs/pattern-composition.md](docs/pattern-composition.md) — how templates, page patterns, and section patterns fit together.
 - [docs/media-conventions.md](docs/media-conventions.md) — the role-not-format rule for images, SVGs, and fonts.
