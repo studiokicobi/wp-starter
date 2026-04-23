@@ -2,8 +2,11 @@
 #
 # bin/verify-theme.sh — Block theme standards verifier.
 #
-# Enforces the nine-item Technical Contract in CLAUDE.md and runs the
-# standard lint/static-analysis stack. Non-zero exit on any failure.
+# Enforces the CI-checkable subset of the Technical Contract in CLAUDE.md —
+# items 1, 3, 4, 5, 7, 8, and 9, scoped to the homepage/front-page workflow —
+# plus the standard lint/static-analysis stack. Items 2 (no custom CSS for
+# layout) and 6 (one source of truth per block style) rely on review
+# discipline and are not grep-checkable. Non-zero exit on any failure.
 #
 # Run locally:  npm run verify
 # Run from CI:  bin/verify-theme.sh
