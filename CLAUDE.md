@@ -132,7 +132,7 @@ See [docs/conventions.md](docs/conventions.md) for the full grammar. Summary:
 
 - `TODO(kind):` is the only TODO form. Kinds are `copy`, `design`, `content`, `a11y`, `perf`. `FIXME`, `XXX`, `HACK` are not accepted — rewrite them as `TODO(kind):` with the appropriate kind.
 - `[UPPERCASE]` in brackets inside docs/prompts is a placeholder for substitution. Never ship content with a placeholder still visible.
-- `wp-starter/…` slugs in docs are literal for this repo but stand for `<slug>/…` when reading docs from a renamed project. When writing new docs that will outlive the rename, prefer `<slug>/…` explicitly.
+- `<theme-slug>/…` (with angle brackets) is a generic placeholder for the theme's pattern-slug prefix in prose. Literal slug references in docs, patterns, and code are rewritten in one pass by `bin/rename-theme.sh`, so using the actual project slug is fine; reserve `<theme-slug>/…` for prose that should describe the shape without committing to a specific value.
 
 ## Skill pack caveats
 

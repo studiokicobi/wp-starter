@@ -15,7 +15,8 @@
 #   - composer.json:                        "name": "vendor/wp-starter" → "vendor/<slug>"
 #   - package.json:                         "name": "wp-starter" → "<slug>"
 #   - phpcs.xml.dist:                       text_domain + prefixes elements
-#   - README.md, docs/*.md, src/**, inc/**: PHP snippets, pattern refs, slugs in prose
+#   - README.md, CLAUDE.md, docs/*.md, src/**, inc/**:
+#                                           PHP snippets, pattern refs, slugs in prose
 #   - bin/*.sh (except this script):        scaffolding-script prefix + tempfile refs
 #
 # Optional flags also set values that vary per project:
@@ -153,6 +154,7 @@ while IFS= read -r f; do TARGETS+=("$f"); done < <(
 	# Only scan directories that actually exist at the repo root.
 	scan_roots=(functions.php style.css composer.json package.json phpcs.xml.dist)
 	[ -f README.md ] && scan_roots+=(README.md)
+	[ -f CLAUDE.md ] && scan_roots+=(CLAUDE.md)
 	for d in patterns templates parts docs src inc bin; do
 		[ -d "$d" ] && scan_roots+=("$d")
 	done
@@ -247,6 +249,7 @@ fi
 echo
 leftover_roots=(functions.php style.css composer.json package.json phpcs.xml.dist)
 [ -f README.md ] && leftover_roots+=(README.md)
+[ -f CLAUDE.md ] && leftover_roots+=(CLAUDE.md)
 for d in patterns templates parts docs src inc bin; do
 	[ -d "$d" ] && leftover_roots+=("$d")
 done
