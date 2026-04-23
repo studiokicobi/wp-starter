@@ -46,11 +46,15 @@ Enabling and verifying GitHub's **Template repository** flag is a manual reposit
 
 ## Rename checklist (mandatory on every new project)
 
-The template ships with the slug `wp-starter` everywhere. **Use the rename script** — doing this by hand is error-prone (the rename touches ~9 files including pattern slugs inside PHP).
+The template ships with the slug `wp-starter` everywhere. **Use the rename script** — doing this by hand is error-prone (the rename touches ~70 references across PHP, JSON, HTML, XML, and Markdown).
 
 ```bash
-npm run rename -- acme-client
+npm run rename -- acme-client \
+  --contributors "acme, jsmith" \
+  --theme-uri    https://github.com/acme/acme-client
 ```
+
+The positional `<slug>` is mandatory. Both flags are optional — pass them if you know the values now; skip them and the script prints a manual-steps reminder.
 
 The script performs the following edits in one pass:
 
@@ -58,15 +62,20 @@ The script performs the following edits in one pass:
 2. **Text domain** = theme slug. Replaces `'wp-starter'` → `'<slug>'` in every PHP i18n call.
 3. **Function prefix** — slug converted to `snake_case`. Replaces `wp_starter_` → `<slug_snake>_`.
 4. **Pattern slugs** — every `wp-starter/…` pattern slug becomes `<slug>/…` in both pattern headers and template `wp:pattern` references.
-5. **`style.css` header** — updates `Text Domain` and `Theme URI`.
+5. **`style.css` header** — updates `Text Domain`; when `--theme-uri` is passed, also `Theme URI`; when `--contributors` is passed, writes or replaces a `Contributors:` line.
 6. **`composer.json`** — updates `name` field (`vendor/<slug>`).
 7. **`phpcs.xml.dist`** — updates the `text_domain` and `prefixes` properties.
 8. **`package.json`** — updates `name` field.
+9. **`docs/`, `src/`, `inc/`** — PHP snippets, text domains, pattern slugs, and backtick-wrapped `` `wp-starter` `` prose references rewrite too, so a scaffolded project doesn't ship with half the old slug still visible.
+
+Re-running the script with the same arguments is a no-op — the `Contributors:` line isn't duplicated, and already-renamed references don't match the search pattern.
 
 After running, manually review:
 
 - **Directory on disk** — the theme folder name must equal the slug.
-- **`style.css`** — `Theme Name`, `Description`, `Author`, `Author URI`, `Tags` are project-specific and not auto-edited.
+- **`style.css`** — `Theme Name`, `Description`, `Author`, `Author URI`, `Tags` are project-specific and not auto-edited. If you skipped `--theme-uri` or `--contributors`, update those lines by hand too.
+- **`package.json`** — `author`, `homepage`, `repository.url`, `bugs.url` point at the template's origin repo; update them to the project's.
+- **`docs/conventions.md`** — starter-history prose was rewritten along with everything else; the text describing "the starter ships with the slug `wp-starter`" will now name your slug. Adjust or delete as you like.
 - **Translation files** — regenerate `.pot` / `.mo` in `languages/` if you carry them over.
 
 Run `npm run verify` afterwards to confirm nothing drifted.
