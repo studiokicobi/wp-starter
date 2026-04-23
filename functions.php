@@ -23,6 +23,11 @@ if ( ! function_exists( 'wp_starter_theme_support' ) ) {
 		add_theme_support( 'responsive-embeds' );
 		// Add support for Block Styles.
 		add_theme_support( 'wp-block-styles' );
+		// Opt into HTML5 markup for core form/gallery output surfaced outside block contexts.
+		add_theme_support(
+			'html5',
+			array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script' )
+		);
 	}
 	add_action( 'after_setup_theme', 'wp_starter_theme_support' );
 }
