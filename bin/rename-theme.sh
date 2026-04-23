@@ -16,6 +16,7 @@
 #   - package.json:                         "name": "wp-starter" → "<slug>"
 #   - phpcs.xml.dist:                       text_domain + prefixes elements
 #   - docs/*.md, src/**, inc/**:            PHP snippets, pattern refs, slugs in prose
+#   - bin/*.sh (except this script):        scaffolding-script prefix + tempfile refs
 #
 # Optional flags also set values that vary per project:
 #   --contributors "foo, bar"  writes/updates style.css Contributors header
@@ -143,17 +144,22 @@ replace_in() {
 # name will also get rewritten — that is a known trade-off; review
 # docs/conventions.md by hand after rename if the starter-history text
 # matters to you.
+# bin/*.sh is scanned so scaffolding scripts — new-block, new-cpt, verify-theme —
+# carry the project's prefix instead of the template's. rename-theme.sh itself
+# is excluded; its comments and OLD_SLUG/OLD_SNAKE variables are the template's
+# self-documentation, kept stable for future maintainers.
 TARGETS=()
 while IFS= read -r f; do TARGETS+=("$f"); done < <(
 	# Only scan directories that actually exist at the repo root.
 	scan_roots=(functions.php style.css composer.json package.json phpcs.xml.dist)
-	for d in patterns templates parts docs src inc; do
+	for d in patterns templates parts docs src inc bin; do
 		[ -d "$d" ] && scan_roots+=("$d")
 	done
 	find \
 		"${scan_roots[@]}" \
 		-type f \
-		\( -name '*.php' -o -name '*.html' -o -name '*.json' -o -name '*.css' -o -name '*.dist' -o -name '*.xml' -o -name '*.md' \) \
+		\( -name '*.php' -o -name '*.html' -o -name '*.json' -o -name '*.css' -o -name '*.dist' -o -name '*.xml' -o -name '*.md' -o -name '*.sh' \) \
+		-not -name 'rename-theme.sh' \
 		2>/dev/null
 )
 
@@ -239,11 +245,12 @@ fi
 #    know the new project's repo URL unless --theme-uri was passed.
 echo
 leftover_roots=(functions.php style.css composer.json package.json phpcs.xml.dist)
-for d in patterns templates parts docs src inc; do
+for d in patterns templates parts docs src inc bin; do
 	[ -d "$d" ] && leftover_roots+=("$d")
 done
 raw_leftover=$(grep -rn "${OLD_SLUG}\|${OLD_SNAKE}_" \
-	--include='*.php' --include='*.html' --include='*.json' --include='*.css' --include='*.xml' --include='*.dist' --include='*.md' \
+	--include='*.php' --include='*.html' --include='*.json' --include='*.css' --include='*.xml' --include='*.dist' --include='*.md' --include='*.sh' \
+	--exclude='rename-theme.sh' \
 	"${leftover_roots[@]}" 2>/dev/null || true)
 
 # Expected leftovers: URLs pointing at the template's origin repo.
