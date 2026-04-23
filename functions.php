@@ -212,7 +212,16 @@ if ( ! function_exists( 'wp_starter_load_scripts' ) ) {
 		wp_style_add_data( $main_handle, 'rtl', 'replace' );
 
 		// 2. Scripts.
-		wp_enqueue_script( $script_handle, get_theme_file_uri( 'build/main.js' ), $asset_data['dependencies'], $asset_data['version'], true );
+		wp_enqueue_script(
+			$script_handle,
+			get_theme_file_uri( 'build/main.js' ),
+			$asset_data['dependencies'],
+			$asset_data['version'],
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
+		);
 	}
 	add_action( 'wp_enqueue_scripts', 'wp_starter_load_scripts' );
 }
