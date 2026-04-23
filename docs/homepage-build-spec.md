@@ -142,8 +142,8 @@ Also capture:
 
 **Preview delivery** (structural, agent-verifiable):
 
-- `npm run verify` passes. The stubbed `npm run a11y` emits a yellow warning until a real tool is wired up — that's expected during Preview delivery and becomes a real gate on Project delivery.
-  - The verify script wraps: contract greps (hex/rgb/px/clamp/fluid:true/customTemplates-on-disk/front-page-is-thin), comment grammar (`TODO(kind)` only), `lint`, `lint:css`, `phpcs`, `phpstan`, and finally `a11y`.
+- `npm run verify` passes. Verify includes a `pa11y-ci` WCAG2AA gate that runs against the live wp-env instance when it's reachable; when wp-env isn't up, the gate degrades to a yellow warning so non-a11y workflows aren't blocked.
+  - The verify script wraps: contract greps (hex/rgb/px/clamp/fluid:true/customTemplates-on-disk/front-page-is-thin), comment grammar (`TODO(kind)` only), `lint`, `lint:css`, `phpcs`, `phpstan`, and finally `pa11y-ci`.
 - `preview_inspect` assertions pass for every section at 1440 and 390.
 - `preview_console_logs` clean; `preview_network` no 404s (fonts especially).
 - Fresh-checkout render shows core's auto-injected skip link on first Tab press and reaches `#wp--skip-link--target` on activation.
@@ -151,7 +151,7 @@ Also capture:
 
 **Project delivery** (adds real a11y audit):
 
-- `npm run a11y` passes with a configured tool (axe / pa11y / lighthouse-ci). Zero criticals.
+- `npm run a11y` passes (`pa11y-ci`, WCAG2AA). Zero violations.
 - Manual keyboard tour: skip link, focus rings visible, tab order sensible.
 - Manual viewport tour at 1440, 1024, 768, 390 — no overflow, no broken stacks.
 
@@ -159,7 +159,7 @@ Also capture:
 
 1. `npm run verify` — single entry point. Do not substitute ad-hoc greps for the verify script.
 2. `preview_start` → for each viewport in `{1440, 390}`: `preview_resize` → `preview_inspect` asserts against calibration → `preview_screenshot`.
-3. `npm run a11y` — Project delivery only, once the tool is wired up.
+3. `npm run a11y` — convenience alias for the `pa11y-ci` check that `verify` already runs; rerun it directly when iterating on a11y fixes.
 
 ### Tolerances
 
@@ -224,8 +224,8 @@ One message at the end of the build with five numbered items, each tagged `[Prev
 
 ### Two delivery gates
 
-- **Preview delivery** — default handoff. Agent ships when `npm run verify` passes (the unwired a11y stub warns but does not gate), `preview_inspect` assertions pass at 1440 and 390, and the structural a11y baseline (skip link, `<main id="wp--skip-link--target">`, `:focus-visible` outlines) is intact.
-- **Project delivery** — adds an external a11y audit (`npm run a11y` with a real tool wired in: axe / pa11y / lighthouse-ci) and manual keyboard/viewport tours. Request this explicitly when you want sign-off, not just a preview.
+- **Preview delivery** — default handoff. Agent ships when `npm run verify` passes (`pa11y-ci` is a hard gate when wp-env is reachable; otherwise it degrades to a warning), `preview_inspect` assertions pass at 1440 and 390, and the structural a11y baseline (skip link, `<main id="wp--skip-link--target">`, `:focus-visible` outlines) is intact.
+- **Project delivery** — adds explicit a11y sign-off: boot wp-env (`npm run env:start`) so `pa11y-ci` runs as a hard gate, plus manual keyboard and viewport tours at 1440, 1024, 768, 390. Request this explicitly when you want sign-off, not just a preview.
 
 ### How to read Findings
 
