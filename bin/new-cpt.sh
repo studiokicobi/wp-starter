@@ -65,6 +65,72 @@ validate_slug() {
 validate_slug "$SLUG"
 [ -n "$PLURAL_SLUG" ] && validate_slug "$PLURAL_SLUG"
 
+# Post type key is the singular slug with dashes → underscores.
+# WordPress recommends ≤20 chars for post type keys; warn over that.
+POST_TYPE_KEY="$(echo "$SLUG" | tr '-' '_')"
+if [ "${#POST_TYPE_KEY}" -gt 20 ]; then
+	echo "warn: post type key '$POST_TYPE_KEY' exceeds 20 chars — WordPress may truncate it" >&2
+fi
+
+# Reserved-slug guard.
+#
+# HARD: WordPress core post types and internal keys. Registering one of
+# these either fails silently or clobbers core behavior. Always fail.
+# List tracked against register_post_type() reserved keys in core as of
+# WordPress 6.9.
+#
+# SOFT: slugs that aren't reserved by core but routinely collide with
+# popular plugins (WooCommerce, bbPress) or WP's own URL rewrite
+# vocabulary. Warn and require an interactive confirmation so a project
+# that genuinely needs the slug can proceed, but a typo can't.
+RESERVED_HARD=(
+	post page attachment revision nav_menu_item custom_css
+	customize_changeset oembed_cache user_request
+	wp_block wp_template wp_template_part wp_navigation
+	wp_global_styles wp_font_family wp_font_face
+	action author order
+)
+RESERVED_SOFT=(
+	product shop_order forum topic reply
+	category tag taxonomy term type user
+	comment date day month year feed paged
+	theme
+)
+
+in_list() {
+	local needle="$1"; shift
+	for item in "$@"; do
+		[ "$item" = "$needle" ] && return 0
+	done
+	return 1
+}
+
+if in_list "$POST_TYPE_KEY" "${RESERVED_HARD[@]}"; then
+	echo "error: '$POST_TYPE_KEY' is a reserved post type key in WordPress core." >&2
+	echo "       Pick a different slug — core refuses to register this one." >&2
+	exit 1
+fi
+
+if in_list "$POST_TYPE_KEY" "${RESERVED_SOFT[@]}"; then
+	echo "warn: '$POST_TYPE_KEY' commonly collides with plugins (WooCommerce, bbPress)" >&2
+	echo "      or WordPress URL rewrite rules. It won't be rejected, but expect" >&2
+	echo "      routing and query_var surprises." >&2
+	if [ ! -t 0 ]; then
+		echo "error: non-interactive shell — refusing to scaffold without confirmation." >&2
+		echo "       Run the command from an interactive terminal to confirm." >&2
+		exit 1
+	fi
+	printf 'Proceed anyway? [y/N] '
+	read -r REPLY
+	case "$REPLY" in
+		y|Y|yes|YES) ;;
+		*)
+			echo "aborted."
+			exit 1
+			;;
+	esac
+fi
+
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
@@ -81,13 +147,6 @@ if [ -z "$THEME_SLUG" ]; then
 	exit 1
 fi
 THEME_PREFIX="$(echo "$THEME_SLUG" | tr '-' '_')"
-
-# Post type key is the singular slug with dashes → underscores.
-# WordPress recommends ≤20 chars for post type keys; warn over that.
-POST_TYPE_KEY="$(echo "$SLUG" | tr '-' '_')"
-if [ "${#POST_TYPE_KEY}" -gt 20 ]; then
-	echo "warn: post type key '$POST_TYPE_KEY' exceeds 20 chars — WordPress may truncate it" >&2
-fi
 
 # Title-case a dash-separated slug. awk is portable; GNU sed \U isn't.
 titleize() {
