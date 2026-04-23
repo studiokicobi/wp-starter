@@ -8,6 +8,8 @@ parameters:
     paths:
         - functions.php
         - patterns
+        - inc
+        - src/blocks
     excludePaths:
         - build/*
         - node_modules/*
