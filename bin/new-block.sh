@@ -113,9 +113,9 @@ cat > "$TARGET/render.php" <<PHP
 /**
  * Server-side render for the ${TITLE} block.
  *
- * @var array    \$attributes Block attributes.
- * @var string   \$content    Serialized inner blocks HTML.
- * @var WP_Block \$block      Block instance.
+ * @var array<string, mixed> \$attributes Block attributes (keyed by attribute name).
+ * @var string                \$content    Serialized inner blocks HTML.
+ * @var WP_Block              \$block      Block instance.
  *
  * @package ${THEME_SLUG}
  */
