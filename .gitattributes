@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Shell scripts must use LF endings regardless of platform.
+# Windows clones with CRLF would break bash (`/bin/bash^M: bad interpreter`).
+*.sh text eol=lf
