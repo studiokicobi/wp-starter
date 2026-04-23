@@ -77,7 +77,9 @@ When a project needs a custom post type:
 
 ## Block theme standards
 
-The nine-item Technical Contract. These rules are enforced by [bin/verify-theme.sh](bin/verify-theme.sh) and CI. Violations fail the build.
+The nine-item Technical Contract.
+
+> **Scope.** The Technical Contract applies to the homepage/front-page workflow — `templates/front-page.html`, `patterns/home.php`, and any `_section-*` pattern it composes. Project-specific landing pages built on the same pattern-driven composition follow the same rules. Non-homepage templates (`page.html`, `single.html`, `archive.html`, etc.) are free to wire blocks directly without pattern composition. Site chrome (the `parts/header.html` and `parts/footer.html` parts and their associated SCSS) is exempt from item 2 regarding layout CSS.
 
 1. **Tokens first.** Every color, spacing, font-size, font-family, and radius must resolve to a `theme.json` preset (`var(--wp--preset--*)`) or a value declared in `settings.custom.*`. No raw hex, rgb, px, or rem in pattern/template/part markup.
 2. **No custom CSS for layout.** Spacing, alignment, and flex/grid behavior must be expressed with block supports (`spacing`, `layout`, `align`) and `theme.json`. Custom stylesheets are for type ramps, motion, and edge cases only.
@@ -88,6 +90,8 @@ The nine-item Technical Contract. These rules are enforced by [bin/verify-theme.
 7. **Fluid typography on.** `settings.typography.fluid: true` is required. Every heading-sized font-size preset (size > 1rem) uses `{ min, max }` form; body-scale presets (≤1rem) can be fixed — fluid body text is a pessimization. No raw `clamp()` in markup. Size presets and font-weight presets share slugs like `medium` — see [docs/weight-vs-size-terminology.md](docs/weight-vs-size-terminology.md) before referring to either in prose.
 8. **Text domain = theme slug.** Every `__()`, `_e()`, `esc_html__()`, `esc_attr__()`, `_x()`, `_n()` call uses the theme slug verbatim. Enforced by phpcs.
 9. **Custom templates must exist on disk.** Every entry in `theme.json`'s `customTemplates` array has a matching `templates/<name>.html` file. No ghost entries.
+
+`bin/verify-theme.sh` enforces items 1, 3, 4, 5, 7, and 9 directly, plus item 8 via the `composer phpcs` invocation. Items 2 and 6 rely on review discipline; any exception belongs in this document, not in the code.
 
 ### Verification
 
@@ -128,7 +132,7 @@ See [docs/conventions.md](docs/conventions.md) for the full grammar. Summary:
 
 - `TODO(kind):` is the only TODO form. Kinds are `copy`, `design`, `content`, `a11y`, `perf`. `FIXME`, `XXX`, `HACK` are not accepted — rewrite them as `TODO(kind):` with the appropriate kind.
 - `[UPPERCASE]` in brackets inside docs/prompts is a placeholder for substitution. Never ship content with a placeholder still visible.
-- `wp-starter/…` slugs in docs are literal for this repo but stand for `<slug>/…` when reading docs from a renamed project. When writing new docs that will outlive the rename, prefer `<slug>/…` explicitly.
+- `<theme-slug>/…` (with angle brackets) is a generic placeholder for the theme's pattern-slug prefix in prose. Literal slug references in docs, patterns, and code are rewritten in one pass by `bin/rename-theme.sh`, so using the actual project slug is fine; reserve `<theme-slug>/…` for prose that should describe the shape without committing to a specific value.
 
 ## Skill pack caveats
 

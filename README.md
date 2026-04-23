@@ -34,7 +34,23 @@ Dependabot alerts on this template currently trace to `@wordpress/*` transitive 
 | WordPress | 6.9 |
 | PHP | 8.3 |
 
-## Creating a new project from this template
+## Quick start with GitHub CLI
+
+Requires [`gh`](https://cli.github.com) authenticated (`gh auth login`). The template repo must have the **Template repository** setting enabled on GitHub.
+
+```bash
+gh repo create studiokicobi/<new-project-name> --template studiokicobi/wp-starter --private --clone
+cd <new-project-name>
+npm run rename -- <theme-slug>
+npm install && composer install
+npm run env:start
+```
+
+`<theme-slug>` follows the rename rules below (lowercase, dashes only, no underscores). Typically matches `<new-project-name>`, but doesn't have to.
+
+For the web-based flow, see the next section.
+
+## Creating a new project from this template manually
 
 Enabling and verifying GitHub's **Template repository** flag is a manual repository-settings step on GitHub. Confirm that setting before relying on the **Use this template** flow below.
 
@@ -46,11 +62,15 @@ Enabling and verifying GitHub's **Template repository** flag is a manual reposit
 
 ## Rename checklist (mandatory on every new project)
 
-The template ships with the slug `wp-starter` everywhere. **Use the rename script** — doing this by hand is error-prone (the rename touches ~9 files including pattern slugs inside PHP).
+The template ships with the slug `wp-starter` everywhere. **Use the rename script** — doing this by hand is error-prone (the rename touches ~70 references across PHP, JSON, HTML, XML, and Markdown).
 
 ```bash
-npm run rename -- acme-client
+npm run rename -- acme-client \
+  --contributors "acme, jsmith" \
+  --theme-uri    https://github.com/acme/acme-client
 ```
+
+The positional `<slug>` is mandatory. Both flags are optional — pass them if you know the values now; skip them and the script prints a manual-steps reminder.
 
 The script performs the following edits in one pass:
 
@@ -58,15 +78,20 @@ The script performs the following edits in one pass:
 2. **Text domain** = theme slug. Replaces `'wp-starter'` → `'<slug>'` in every PHP i18n call.
 3. **Function prefix** — slug converted to `snake_case`. Replaces `wp_starter_` → `<slug_snake>_`.
 4. **Pattern slugs** — every `wp-starter/…` pattern slug becomes `<slug>/…` in both pattern headers and template `wp:pattern` references.
-5. **`style.css` header** — updates `Text Domain` and `Theme URI`.
+5. **`style.css` header** — updates `Text Domain`; when `--theme-uri` is passed, also `Theme URI`; when `--contributors` is passed, writes or replaces a `Contributors:` line.
 6. **`composer.json`** — updates `name` field (`vendor/<slug>`).
 7. **`phpcs.xml.dist`** — updates the `text_domain` and `prefixes` properties.
 8. **`package.json`** — updates `name` field.
+9. **`docs/`, `src/`, `inc/`** — PHP snippets, text domains, pattern slugs, and backtick-wrapped `` `wp-starter` `` prose references rewrite too, so a scaffolded project doesn't ship with half the old slug still visible.
+
+Re-running the script with the same arguments is a no-op — the `Contributors:` line isn't duplicated, and already-renamed references don't match the search pattern.
 
 After running, manually review:
 
 - **Directory on disk** — the theme folder name must equal the slug.
-- **`style.css`** — `Theme Name`, `Description`, `Author`, `Author URI`, `Tags` are project-specific and not auto-edited.
+- **`style.css`** — `Theme Name`, `Description`, `Author`, `Author URI`, `Tags` are project-specific and not auto-edited. If you skipped `--theme-uri` or `--contributors`, update those lines by hand too.
+- **`package.json`** — `author`, `homepage`, `repository.url`, `bugs.url` point at the template's origin repo; update them to the project's.
+- **`docs/conventions.md`** — starter-history prose was rewritten along with everything else; the text describing "the starter ships with the slug `wp-starter`" will now name your slug. Adjust or delete as you like.
 - **Translation files** — regenerate `.pot` / `.mo` in `languages/` if you carry them over.
 
 Run `npm run verify` afterwards to confirm nothing drifted.
@@ -84,11 +109,16 @@ npm run cpt:new -- <slug>   # scaffold a custom post type at inc/post-types/<slu
 npm run lint           # lint JS (same as lint:js; matches the PostToolUse hook)
 npm run lint:js        # lint JS
 npm run lint:css       # lint SCSS/CSS
+npm run lint:pkg       # lint package.json against @wordpress/scripts rules
 npm run format         # format source/docs (honours .prettierignore)
-npm run verify         # block theme standards + lint + phpcs + phpstan
-npm run rename -- <slug> # rename the theme slug across every file that references it
+npm run verify         # block theme standards + lint + phpcs + phpstan + pa11y
+npm run a11y           # pa11y-ci against the local wp-env (expects :8888 — verify probes the real port)
+npm run rename -- <slug> [--contributors "foo, bar"] [--theme-uri <url>]
+                       # rename the theme slug across every file that references it; flags fill style.css
 npm run env:start      # boot wp-env (latest stable WordPress, theme mounted)
-npm run env:stop
+npm run env:stop       # stop wp-env containers (data preserved)
+npm run env:destroy    # stop and delete wp-env containers + volumes
+npm run env:clean      # wipe the wp-env database (all environments)
 npm run env:cli -- ... # run WP-CLI inside wp-env, e.g. `npm run env:cli -- plugin list`
 
 composer phpcs         # PHPCS against WordPress Coding Standards
@@ -112,7 +142,7 @@ This repo is set up for two assistants in parallel:
 
 ### Block theme standards
 
-The agent instructions enforce a nine-item [Technical Contract](CLAUDE.md#block-theme-standards) — tokens, fluid type, template/pattern separation, role-based media, and others. Supporting docs:
+The agent instructions define a nine-item [Technical Contract](CLAUDE.md#block-theme-standards) scoped to the homepage/front-page workflow — tokens, fluid type, template/pattern separation, role-based media, and others. See CLAUDE.md for the scope boundary (non-homepage templates and site chrome are exempt from specific items) and for which items are CI-enforced versus review-enforced. Supporting docs:
 
 - [docs/pattern-composition.md](docs/pattern-composition.md) — how templates, page patterns, and section patterns fit together.
 - [docs/media-conventions.md](docs/media-conventions.md) — the role-not-format rule for images, SVGs, and fonts.

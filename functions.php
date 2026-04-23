@@ -23,6 +23,11 @@ if ( ! function_exists( 'wp_starter_theme_support' ) ) {
 		add_theme_support( 'responsive-embeds' );
 		// Add support for Block Styles.
 		add_theme_support( 'wp-block-styles' );
+		// Opt into HTML5 markup for core form/gallery output surfaced outside block contexts.
+		add_theme_support(
+			'html5',
+			array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption', 'style', 'script' )
+		);
 	}
 	add_action( 'after_setup_theme', 'wp_starter_theme_support' );
 }
@@ -48,12 +53,12 @@ if ( ! function_exists( 'wp_starter_curate_editor' ) ) {
 		// Core block patterns — WordPress's built-in patterns. Keeps the
 		// inserter focused on this theme's own _section-* patterns.
 		remove_theme_support( 'core-block-patterns' );
+
+		// WordPress.org pattern directory — paired with remove_theme_support()
+		// above; both gates must be closed to hide every remote pattern surface.
+		add_filter( 'should_load_remote_block_patterns', '__return_false' );
 	}
 	add_action( 'after_setup_theme', 'wp_starter_curate_editor' );
-
-	// WordPress.org pattern directory — paired with remove_theme_support()
-	// above; both gates must be closed to hide every remote pattern surface.
-	add_filter( 'should_load_remote_block_patterns', '__return_false' );
 }
 
 if ( ! function_exists( 'wp_starter_disable_openverse' ) ) {
@@ -207,7 +212,16 @@ if ( ! function_exists( 'wp_starter_load_scripts' ) ) {
 		wp_style_add_data( $main_handle, 'rtl', 'replace' );
 
 		// 2. Scripts.
-		wp_enqueue_script( $script_handle, get_theme_file_uri( 'build/main.js' ), $asset_data['dependencies'], $asset_data['version'], true );
+		wp_enqueue_script(
+			$script_handle,
+			get_theme_file_uri( 'build/main.js' ),
+			$asset_data['dependencies'],
+			$asset_data['version'],
+			array(
+				'in_footer' => true,
+				'strategy'  => 'defer',
+			)
+		);
 	}
 	add_action( 'wp_enqueue_scripts', 'wp_starter_load_scripts' );
 }

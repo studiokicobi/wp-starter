@@ -2,8 +2,11 @@
 #
 # bin/verify-theme.sh — Block theme standards verifier.
 #
-# Enforces the nine-item Technical Contract in CLAUDE.md and runs the
-# standard lint/static-analysis stack. Non-zero exit on any failure.
+# Enforces the CI-checkable subset of the Technical Contract in CLAUDE.md —
+# items 1, 3, 4, 5, 7, 8, and 9, scoped to the homepage/front-page workflow —
+# plus the standard lint/static-analysis stack. Items 2 (no custom CSS for
+# layout) and 6 (one source of truth per block style) rely on review
+# discipline and are not grep-checkable. Non-zero exit on any failure.
 #
 # Run locally:  npm run verify
 # Run from CI:  bin/verify-theme.sh
@@ -12,6 +15,9 @@ set -u
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
+
+# shellcheck source=./_pm-detect.sh
+. "$ROOT/bin/_pm-detect.sh"
 
 FAIL=0
 pass() { printf "  \033[32m✓\033[0m %s\n" "$1"; }
@@ -311,7 +317,7 @@ fi
 section "Comment grammar (TODO(kind): only)"
 
 bad_todos=$(
-	{ grep -rEn '\bTODO\b' patterns templates parts assets 2>/dev/null || true; } \
+	{ grep -rEn '\bTODO\b' patterns templates parts assets inc functions.php 2>/dev/null || true; } \
 		| grep -vE 'TODO\((copy|design|content|a11y|perf)\):' \
 		|| true
 )
@@ -322,7 +328,7 @@ else
 	pass "every TODO has a valid kind"
 fi
 
-forbidden=$(grep -rEn '\b(FIXME|XXX|HACK)\b' patterns templates parts assets 2>/dev/null || true)
+forbidden=$(grep -rEn '\b(FIXME|XXX|HACK)\b' patterns templates parts assets inc functions.php 2>/dev/null || true)
 if [ -n "$forbidden" ]; then
 	fail "FIXME/XXX/HACK are forbidden — rewrite as TODO(kind):"
 	printf "%s\n" "$forbidden" | sed 's/^/    /'
@@ -388,7 +394,38 @@ if command -v npm > /dev/null; then
 	fi
 
 	if [ -n "$WP_URL" ] && curl -fsS --max-time 2 "$WP_URL/" > /dev/null 2>&1; then
-		run "pa11y-ci ($WP_URL)"  npx --silent pa11y-ci "$WP_URL/" "$WP_URL/?p=1"
+		# Run pa11y-ci at two viewports so mobile-only a11y regressions (overflow,
+		# focus rings clipped by narrow viewports, tap-target sizing) don't slip
+		# past the desktop-only sweep. pa11y-ci's CLI has no --viewport flag, so
+		# we layer a temporary config on top of .pa11yci.json for each run.
+		pa11y_tmpdir=$(mktemp -d)
+		trap 'rm -rf "$pa11y_tmpdir"' EXIT
+		desktop_cfg="$pa11y_tmpdir/desktop.json"
+		mobile_cfg="$pa11y_tmpdir/mobile.json"
+		cat > "$desktop_cfg" <<'JSON'
+{
+	"defaults": {
+		"standard": "WCAG2AA",
+		"timeout": 30000,
+		"includeWarnings": false,
+		"chromeLaunchConfig": { "args": [ "--no-sandbox", "--disable-dev-shm-usage" ] },
+		"viewport": { "width": 1280, "height": 800 }
+	}
+}
+JSON
+		cat > "$mobile_cfg" <<'JSON'
+{
+	"defaults": {
+		"standard": "WCAG2AA",
+		"timeout": 30000,
+		"includeWarnings": false,
+		"chromeLaunchConfig": { "args": [ "--no-sandbox", "--disable-dev-shm-usage" ] },
+		"viewport": { "width": 375, "height": 667 }
+	}
+}
+JSON
+		run "pa11y-ci desktop 1280x800 ($WP_URL)" npx --silent pa11y-ci --config "$desktop_cfg" "$WP_URL/" "$WP_URL/?p=1"
+		run "pa11y-ci mobile 375x667 ($WP_URL)"   npx --silent pa11y-ci --config "$mobile_cfg" "$WP_URL/" "$WP_URL/?p=1"
 	else
 		warn "wp-env not reachable — start it with 'npm run env:start' to exercise the a11y gate"
 	fi

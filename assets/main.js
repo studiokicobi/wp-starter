@@ -21,7 +21,7 @@
 					.querySelector(
 						'.site-header .wp-block-navigation__responsive-container-close'
 					)
-					.click();
+					?.click();
 			}
 		}
 	};
