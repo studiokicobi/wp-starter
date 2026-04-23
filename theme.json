@@ -332,14 +332,16 @@
 			},
 			"h5": {
 				"typography": {
-					"fontSize": "var(--wp--preset--font-size--small)",
+					"fontSize": "var(--wp--preset--font-size--medium)",
 					"lineHeight": "var(--wp--custom--typography--line-height--heading)"
 				}
 			},
 			"h6": {
 				"typography": {
 					"fontSize": "var(--wp--preset--font-size--small)",
-					"lineHeight": "var(--wp--custom--typography--line-height--heading)"
+					"lineHeight": "var(--wp--custom--typography--line-height--heading)",
+					"textTransform": "uppercase",
+					"letterSpacing": "0.05em"
 				}
 			}
 		},
