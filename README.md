@@ -34,7 +34,23 @@ Dependabot alerts on this template currently trace to `@wordpress/*` transitive 
 | WordPress | 6.9 |
 | PHP | 8.3 |
 
-## Creating a new project from this template
+## Quick start with GitHub CLI
+
+Requires [`gh`](https://cli.github.com) authenticated (`gh auth login`). The template repo must have the **Template repository** setting enabled on GitHub.
+
+```bash
+gh repo create studiokicobi/<new-project-name> --template studiokicobi/wp-starter --private --clone
+cd <new-project-name>
+npm run rename -- <theme-slug>
+npm install && composer install
+npm run env:start
+```
+
+`<theme-slug>` follows the rename rules below (lowercase, dashes only, no underscores). Typically matches `<new-project-name>`, but doesn't have to.
+
+For the web-based flow, see the next section.
+
+## Creating a new project from this template manually
 
 Enabling and verifying GitHub's **Template repository** flag is a manual repository-settings step on GitHub. Confirm that setting before relying on the **Use this template** flow below.
 
