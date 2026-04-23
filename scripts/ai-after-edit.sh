@@ -12,6 +12,11 @@ else
   PM="npm"
 fi
 
+if [ ! -d node_modules ] || [ ! -x "node_modules/.bin/wp-scripts" ]; then
+  echo "ai-after-edit: node_modules missing — skipping lint. Run 'npm install' to enable."
+  exit 0
+fi
+
 if [ -f package.json ] && node -e "process.exit(require('./package.json').scripts?.lint ? 0 : 1)" 2>/dev/null; then
   $PM run lint
 fi
