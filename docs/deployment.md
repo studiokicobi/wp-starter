@@ -62,29 +62,19 @@ This template isn't a Bedrock scaffold, but it's compatible: drop the theme dire
 
 ## CI
 
-The minimum useful CI is `npm run verify` on every PR. GitHub Actions skeleton (paste into `.github/workflows/verify.yml` when a project needs it — *not* committed by default so projects can opt in deliberately):
+This starter ships `.github/workflows/ci.yml` — a GitHub Actions workflow that runs on every push to `main` and every PR. Three jobs:
 
-```yaml
-name: verify
-on: [pull_request]
-jobs:
-  verify:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: '20', cache: 'npm' }
-      - uses: shivammathur/setup-php@v2
-        with: { php-version: '8.3', tools: composer }
-      - run: npm ci
-      - run: composer install --prefer-dist --no-progress
-      - run: npm run env:start
-      - run: npm run verify
-      - if: always()
-        run: npm run env:stop
-```
+| Job | What it runs | Depends on |
+| --- | --- | --- |
+| `node` | `npm run lint`, `npm run lint:css`, `npm run build` | — |
+| `php` | `composer phpcs`, `composer phpstan` | — |
+| `verify` | `bin/verify-theme.sh` | `node` + `php` |
 
-`verify` runs `pa11y-ci` against the live wp-env instance. It asks wp-env for the real home URL (`wp option get home`) because wp-env shifts off the default port 8888 when another project already holds it. If wp-env isn't reachable, the a11y gate degrades to a yellow warning rather than a hard fail, so verify stays usable for non-a11y workflows and CI pipelines that don't boot wp-env. GitHub-hosted runners ship Docker preinstalled, so `npm run env:start` works in the default `ubuntu-latest` image without extra setup.
+`bin/verify-theme.sh` re-runs the lint/build/phpcs/phpstan stack (redundant but cheap) and adds the block-theme contract greps plus the `pa11y-ci` WCAG2AA gate. The committed workflow does *not* boot `wp-env`, so `pa11y-ci` degrades to a yellow warning in CI — the accessibility gate is designed to run locally before project delivery with `npm run env:start && npm run verify`.
+
+If a project needs `pa11y-ci` gating in CI (e.g. a client build that requires WCAG sign-off per PR), add a `npm run env:start` step before the verify step and an `npm run env:stop` step with `if: always()` after. GitHub-hosted runners ship Docker preinstalled, so `wp-env` works in the default `ubuntu-latest` image without extra setup. Expect CI time to grow by roughly 90 seconds per run.
+
+`pa11y-ci` asks `wp-env` for the real home URL (`wp option get home`) rather than trusting port 8888 — `wp-env` shifts ports when another project already holds the default, which would otherwise silently test another project's site.
 
 For deploys, use the host's recommended flow rather than running `rsync` or `scp` directly — every host has an atomic-swap story that avoids half-deployed states.
 
