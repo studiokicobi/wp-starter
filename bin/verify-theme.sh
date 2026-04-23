@@ -388,7 +388,38 @@ if command -v npm > /dev/null; then
 	fi
 
 	if [ -n "$WP_URL" ] && curl -fsS --max-time 2 "$WP_URL/" > /dev/null 2>&1; then
-		run "pa11y-ci ($WP_URL)"  npx --silent pa11y-ci "$WP_URL/" "$WP_URL/?p=1"
+		# Run pa11y-ci at two viewports so mobile-only a11y regressions (overflow,
+		# focus rings clipped by narrow viewports, tap-target sizing) don't slip
+		# past the desktop-only sweep. pa11y-ci's CLI has no --viewport flag, so
+		# we layer a temporary config on top of .pa11yci.json for each run.
+		pa11y_tmpdir=$(mktemp -d)
+		trap 'rm -rf "$pa11y_tmpdir"' EXIT
+		desktop_cfg="$pa11y_tmpdir/desktop.json"
+		mobile_cfg="$pa11y_tmpdir/mobile.json"
+		cat > "$desktop_cfg" <<'JSON'
+{
+	"defaults": {
+		"standard": "WCAG2AA",
+		"timeout": 30000,
+		"includeWarnings": false,
+		"chromeLaunchConfig": { "args": [ "--no-sandbox", "--disable-dev-shm-usage" ] },
+		"viewport": { "width": 1280, "height": 800 }
+	}
+}
+JSON
+		cat > "$mobile_cfg" <<'JSON'
+{
+	"defaults": {
+		"standard": "WCAG2AA",
+		"timeout": 30000,
+		"includeWarnings": false,
+		"chromeLaunchConfig": { "args": [ "--no-sandbox", "--disable-dev-shm-usage" ] },
+		"viewport": { "width": 375, "height": 667 }
+	}
+}
+JSON
+		run "pa11y-ci desktop 1280x800 ($WP_URL)" npx --silent pa11y-ci --config "$desktop_cfg" "$WP_URL/" "$WP_URL/?p=1"
+		run "pa11y-ci mobile 375x667 ($WP_URL)"   npx --silent pa11y-ci --config "$mobile_cfg" "$WP_URL/" "$WP_URL/?p=1"
 	else
 		warn "wp-env not reachable — start it with 'npm run env:start' to exercise the a11y gate"
 	fi
