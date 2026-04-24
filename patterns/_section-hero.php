@@ -7,6 +7,9 @@
  * Keywords: hero, banner, intro
  * Viewport Width: 1280
  *
+ * TODO(content): replace CTA URL (currently href="#") before launch.
+ * TODO(copy): replace starter CTA copy ("Get started") with project copy.
+ *
  * @package wp-starter
  *
  * Cover-block a11y note: `backgroundColor` is set in addition to `overlayColor`
@@ -32,8 +35,6 @@
 		<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
 		<div class="wp-block-buttons">
 			<!-- wp:button -->
-			<!-- TODO(content): replace CTA URL before launch -->
-			<!-- TODO(copy): replace starter CTA copy -->
 			<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="#"><?php echo esc_html__( 'Get started', 'wp-starter' ); ?></a></div>
 			<!-- /wp:button -->
 		</div>
