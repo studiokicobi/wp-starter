@@ -96,6 +96,11 @@ After running, manually review:
 
 Run `npm run verify` afterwards to confirm nothing drifted.
 
+## Troubleshooting
+
+**`npm run env:start` fails with "port already allocated".**
+A previous wp-env instance is still running on the same port. Run `docker ps` to find the lingering container, then `npm run env:stop` from the project directory that owns it. If the directory no longer exists, stop the container directly with `docker stop <container-id>` and `docker rm <container-id>`.
+
 ## Scripts
 
 ```bash
