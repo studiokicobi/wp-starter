@@ -258,6 +258,15 @@ raw_leftover=$(grep -rn "${OLD_SLUG}\|${OLD_SNAKE}_" \
 	--exclude='rename-theme.sh' \
 	"${leftover_roots[@]}" 2>/dev/null || true)
 
+# Documentation references to the template's origin (e.g. a README
+# `gh repo create ... --template <owner>/wp-starter` instruction) tell
+# future users how to fork a new project from this template. They must
+# survive rename — filter them out of the leftover check entirely so
+# they are not flagged as unexpected or listed as "update these by hand".
+raw_leftover=$(printf '%s\n' "$raw_leftover" \
+	| grep -vE -- "--template [^[:space:]]+/${OLD_SLUG}\b" \
+	|| true)
+
 # Expected leftovers: URLs pointing at the template's origin repo.
 expected=$(printf '%s\n' "$raw_leftover" | grep -E 'https?://|Theme URI|git\+https' || true)
 unexpected=$(printf '%s\n' "$raw_leftover" | grep -vE 'https?://|Theme URI|git\+https' | grep -v '^$' || true)
