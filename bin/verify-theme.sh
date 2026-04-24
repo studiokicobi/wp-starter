@@ -337,6 +337,20 @@ else
 fi
 
 # ---------------------------------------------------------------------------
+# Rename script non-regression (Issue #4).
+#   bin/test-rename.sh runs the rename against a substring-containing slug in
+#   an isolated worktree and asserts no double-suffix output appears. Guards
+#   against regressing the boundary/safety-check fix from that issue.
+# ---------------------------------------------------------------------------
+section "Rename collision safety (Issue #4)"
+
+if bash "$ROOT/bin/test-rename.sh"; then
+	pass "rename non-regression smoke test"
+else
+	fail "rename non-regression smoke test — see output above"
+fi
+
+# ---------------------------------------------------------------------------
 # Standard tool stack (build, lint, phpcs, phpstan).
 # ---------------------------------------------------------------------------
 section "Build / lint / phpcs / phpstan"
