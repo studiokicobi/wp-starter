@@ -117,7 +117,7 @@ Stage → verify against staging → client review → production. Per-project s
 
 ## Where the compression comes from
 
-- **Template bootstrap.** The wp-starter template itself replaces ~half a day of per-project setup: renaming, CI, lint/verify wiring, theme-level scaffolding.
+- **Template bootstrap.** This starter template replaces ~half a day of per-project setup: renaming, CI, lint/verify wiring, theme-level scaffolding.
 - **Fixed-slot design-system doc.** `docs/process/design-system.md` pre-structured to the repo's slot counts replaces "sit with Figma and write a design spec from scratch" (~1 day).
 - **AI-authored patterns** with Create Block Theme as visual-first escape hatch (~2 days vs. hand-authoring).
 - **`npm run verify`** replaces manual QA sweeps.

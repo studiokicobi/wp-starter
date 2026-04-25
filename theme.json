@@ -125,6 +125,7 @@
 		},
 		"typography": {
 			"customFontSize": false,
+			"defaultFontSizes": false,
 			"lineHeight": true,
 			"fluid": true,
 			"fontFamilies": [
