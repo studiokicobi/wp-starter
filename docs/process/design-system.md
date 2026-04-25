@@ -86,7 +86,7 @@ Fluid typography is **on** (`settings.typography.fluid: true`). Presets above `s
 | `light`  |       | Large display headings     |
 | `normal` |       | Body, buttons, most headings |
 
-Add more weight slugs (e.g. `medium`, `bold`) here if the design uses them. Keep slug names distinct from size slugs in prose — see `docs/weight-vs-size-terminology.md`.
+Add more weight slugs (e.g. `medium`, `bold`) here if the design uses them. Keep slug names distinct from size slugs in prose — see [`../weight-vs-size-terminology.md`](../weight-vs-size-terminology.md).
 
 ---
 
