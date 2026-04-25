@@ -29,6 +29,14 @@ jobs:
             - run: npm run lint
             - run: npm run lint:css
             - run: npm run build
+            - name: Check committed build output
+              run: |
+                  if [ -n "$(git status --porcelain -- build)" ]; then
+                      echo "Committed build output is stale. Run 'npm run build' and commit the updated build/ files."
+                      git status --short -- build
+                      git diff -- build
+                      exit 1
+                  fi
 
     php:
         name: PHP (phpcs + phpstan)
@@ -52,6 +60,45 @@ jobs:
             - run: composer install --prefer-dist --no-progress --no-interaction
             - run: composer phpcs
             - run: composer phpstan
+
+    scaffold:
+        name: Scaffold smoke tests
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+            - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: npm
+
+            - uses: shivammathur/setup-php@accd6127cb78bee3e8082180cb391013d204ef9f # v2
+              with:
+                  php-version: '8.3'
+                  tools: composer:v2
+                  coverage: none
+
+            - run: npm ci
+            - run: composer install --prefer-dist --no-progress --no-interaction
+            - name: Run scaffold probes
+              run: |
+                  npm run block:new -- client-logo-strip
+                  npm run block:new -- marketing-feature-panel-component
+                  if npm run block:new -- Bad_Block; then
+                      echo "Expected invalid block slug to fail."
+                      exit 1
+                  fi
+
+                  npm run cpt:new -- book
+                  npm run cpt:new -- case-study
+                  npm run cpt:new -- person --plural people
+                  if npm run cpt:new -- extraordinarily-long-case-study; then
+                      echo "Expected overlong CPT slug to fail."
+                      exit 1
+                  fi
+
+                  npm run build
+                  npm run verify
 
     verify:
         name: Verify (block theme standards)
