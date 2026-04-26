@@ -79,6 +79,8 @@ GitHub-hosted runners ship Docker preinstalled, so `wp-env` works in the default
 
 `pa11y-ci` asks `wp-env` for the real home URL (`wp option get home`) rather than trusting port 8888 — `wp-env` shifts ports when another project already holds the default, which would otherwise silently test another project's site. `npm run a11y` fails if `wp-env` is not running; `npm run verify` warns and continues so non-runtime checks remain usable.
 
+The a11y runner hides WordPress core's generated comment-form URL input (`#url`) because HTML_CodeSniffer reports a false positive on its `autocomplete="url"` attribute. The rest of the comment template remains in scope.
+
 `npm run package` writes `.dist/<theme-slug>.zip`. `npm run package:check` validates that the zip has a single top-level theme directory, contains the runtime files WordPress needs (`style.css`, `theme.json`, templates/parts/patterns, and compiled `build/` assets), and excludes development-only directories such as `.github/`, `.codex/`, `docs/`, `src/`, `node_modules/`, and `vendor/`.
 
 For deploys, use the host's recommended flow rather than running `rsync` or `scp` directly — every host has an atomic-swap story that avoids half-deployed states.
