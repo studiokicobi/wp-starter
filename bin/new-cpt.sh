@@ -66,10 +66,12 @@ validate_slug "$SLUG"
 [ -n "$PLURAL_SLUG" ] && validate_slug "$PLURAL_SLUG"
 
 # Post type key is the singular slug with dashes → underscores.
-# WordPress recommends ≤20 chars for post type keys; warn over that.
+# WordPress requires ≤20 chars for post type keys.
 POST_TYPE_KEY="$(echo "$SLUG" | tr '-' '_')"
 if [ "${#POST_TYPE_KEY}" -gt 20 ]; then
-	echo "warn: post type key '$POST_TYPE_KEY' exceeds 20 chars — WordPress may truncate it" >&2
+	echo "error: post type key '$POST_TYPE_KEY' exceeds 20 chars" >&2
+	echo "       Use a shorter slug so WordPress and PHPCS accept the generated post type." >&2
+	exit 1
 fi
 
 # Reserved-slug guard.
@@ -256,5 +258,5 @@ echo
 echo "Next steps:"
 echo "  1. Edit $TARGET — review labels, menu_icon, supports, rewrite slug."
 echo "  2. Flush rewrites: npm run env:cli -- rewrite flush   (or visit Settings → Permalinks)."
-echo "  3. TODO(copy): plural 'Case Studies' style irregulars need manual label review."
+echo "  3. TODO(copy): review generated plural labels; irregular nouns need manual correction."
 echo "  4. For field groups, use ACF Pro's UI (docs/acf-pro-setup.md) or register_post_meta()."

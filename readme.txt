@@ -4,7 +4,7 @@ Tags: full-site-editing, block-patterns, block-styles, style-variations, wide-bl
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 8.3
-Stable tag: 1.0.0
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,9 @@ A Full Site Editing starter theme built on top of them.es/starter-fse, tuned for
 4. Follow the rename checklist in `README.md` before development.
 
 == Changelog ==
+
+= 1.0.2 =
+* Tighten rename, scaffold, theme.json, and verification guardrails.
 
 = 1.0.0 =
 * Initial fork of them.es/starter-fse with modern-hosting baseline, PHP tooling, wp-env, and AI agent skills.

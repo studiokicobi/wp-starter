@@ -96,6 +96,11 @@ After running, manually review:
 
 Run `npm run verify` afterwards to confirm nothing drifted.
 
+## Troubleshooting
+
+**`npm run env:start` fails with "port already allocated".**
+A previous wp-env instance is still running on the same port. Run `docker ps` to find the lingering container, then `npm run env:stop` from the project directory that owns it. If the directory no longer exists, stop the container directly with `docker stop <container-id>` and `docker rm <container-id>`.
+
 ## Scripts
 
 ```bash
@@ -148,6 +153,15 @@ The agent instructions define a nine-item [Technical Contract](CLAUDE.md#block-t
 - [docs/media-conventions.md](docs/media-conventions.md) — the role-not-format rule for images, SVGs, and fonts.
 - [docs/weight-vs-size-terminology.md](docs/weight-vs-size-terminology.md) — disambiguating "medium" across size, weight, and spacing.
 - [docs/conventions.md](docs/conventions.md) — slug substitution, `[PLACEHOLDER]` grammar, and the `TODO(kind):` comment vocabulary.
+
+### Project workflow
+
+For building a site from a completed Figma design, see [docs/process/site-building-workflow.md](docs/process/site-building-workflow.md). The workflow targets 3-5 working days for a 10-page marketing site by leaning on this template's scaffolding and AI coding assistants. It depends on two supporting documents:
+
+- [docs/process/design-intake-checklist.md](docs/process/design-intake-checklist.md) — defines what "a completed Figma design" means and gates Phase 0 of the build.
+- [docs/process/design-system.md](docs/process/design-system.md) — pre-structured token contract between Figma and `theme.json`. Fill it in before Phase 2.
+
+For homepage-only work — or as a build-spec input to an AI agent — see the homepage spec below.
 
 ### Using with an AI agent
 

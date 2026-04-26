@@ -100,7 +100,9 @@ import { __ } from '@wordpress/i18n';
 
 export default function Edit() {
 	const blockProps = useBlockProps();
-	return <div { ...blockProps }>{ __( '${TITLE}', '${THEME_SLUG}' ) }</div>;
+	const label = __( '${TITLE}', '${THEME_SLUG}' );
+
+	return <div { ...blockProps }>{ label }</div>;
 }
 JS
 

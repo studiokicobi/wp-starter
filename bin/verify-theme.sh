@@ -26,9 +26,9 @@ warn() { printf "  \033[33m!\033[0m %s\n" "$1"; }
 section() { printf "\n\033[1m%s\033[0m\n" "$1"; }
 
 # ---------------------------------------------------------------------------
-# 1. Tokens first. No raw hex/rgb/px in pattern or template markup.
+# 1. Tokens first. No raw hex/rgb/px/rem in pattern or template markup.
 # ---------------------------------------------------------------------------
-section "1. Tokens first (no raw hex/rgb/px in patterns/templates/parts)"
+section "1. Tokens first (no raw hex/rgb/px/rem in patterns/templates/parts)"
 
 # Scan only the content lines — skip PHP docblocks and HTML-comment header lines.
 hex_hits=$(
@@ -78,6 +78,18 @@ if [ -n "$px_hits" ]; then
 	fi
 else
 	pass "no raw px values in patterns/templates/parts"
+fi
+
+rem_hits=$(
+	{ grep -rEn '\b[0-9]+([.][0-9]+)?rem\b' patterns templates parts 2>/dev/null || true; } \
+		| grep -v -E '^[^:]+:[0-9]+:[[:space:]]*(\*|//|<!--|/\*\*)' \
+		|| true
+)
+if [ -n "$rem_hits" ]; then
+	fail "raw rem values in markup:"
+	printf "%s\n" "$rem_hits" | sed 's/^/    /'
+else
+	pass "no raw rem values in patterns/templates/parts"
 fi
 
 # ---------------------------------------------------------------------------
@@ -334,6 +346,20 @@ if [ -n "$forbidden" ]; then
 	printf "%s\n" "$forbidden" | sed 's/^/    /'
 else
 	pass "no FIXME/XXX/HACK"
+fi
+
+# ---------------------------------------------------------------------------
+# Rename script non-regression (Issue #4).
+#   bin/test-rename.sh runs the rename against a substring-containing slug in
+#   an isolated worktree and asserts no double-suffix output appears. Guards
+#   against regressing the boundary/safety-check fix from that issue.
+# ---------------------------------------------------------------------------
+section "Rename collision safety (Issue #4)"
+
+if bash "$ROOT/bin/test-rename.sh"; then
+	pass "rename non-regression smoke test"
+else
+	fail "rename non-regression smoke test — see output above"
 fi
 
 # ---------------------------------------------------------------------------

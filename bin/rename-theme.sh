@@ -115,6 +115,47 @@ fi
 NEW_SNAKE="$(echo "$NEW_SLUG" | tr '-' '_')"
 OLD_SNAKE="wp_starter"
 
+# --- Substring-collision safety check ---------------------------------------
+# If the new slug embeds the current slug (e.g. old `wp-starter`, new
+# `wp-starter-test-5`), the substitution patterns below would re-match
+# inside an already-rewritten slug on a second pass and produce double-suffix
+# output like `wp-starter-test-5-test-5`. Reject the input up front with a
+# clear message. The substitution regex below also carries a negative-
+# lookahead guard as defence-in-depth. See Issue #4.
+case "$NEW_SLUG" in
+	*"$OLD_SLUG"*)
+		cat >&2 <<ERR
+error: new slug '$NEW_SLUG' embeds the current slug '$OLD_SLUG' as a substring.
+
+       Running this rename would cause substring collisions — the substitution
+       patterns would match inside the already-rewritten new slug on a second
+       pass and produce double-suffix output (e.g. 'wp-starter-test-test').
+
+       Choose a slug that does not contain '$OLD_SLUG'.
+ERR
+		exit 1
+		;;
+esac
+
+# --- Defensive substitution guards -------------------------------------------
+# Negative lookaheads that stop `\b${OLD_SLUG}-` and `\b${OLD_SNAKE}_` from
+# re-matching inside a new-slug token that shares the old slug's prefix. The
+# safety check above rejects this input entirely, so these guards are always
+# empty at runtime — but they remain wired into the regex as a second line
+# of defence against regression of the safety check.
+SLUG_GUARD=""
+case "$NEW_SLUG" in
+	"${OLD_SLUG}-"*)
+		SLUG_GUARD="(?!\\Q${NEW_SLUG#${OLD_SLUG}-}\\E)"
+		;;
+esac
+SNAKE_GUARD=""
+case "$NEW_SNAKE" in
+	"${OLD_SNAKE}_"*)
+		SNAKE_GUARD="(?!\\Q${NEW_SNAKE#${OLD_SNAKE}_}\\E)"
+		;;
+esac
+
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
@@ -171,7 +212,7 @@ while IFS= read -r f; do TARGETS+=("$f"); done < <(
 #    The `_` form covers function prefixes; the bare form covers phpcs
 #    `<element value="wp_starter"/>` and similar whole-word references.
 for f in "${TARGETS[@]}"; do
-	perl -pi -e "s/\b${OLD_SNAKE}_/${NEW_SNAKE}_/g" "$f"
+	perl -pi -e "s/\b${OLD_SNAKE}_${SNAKE_GUARD}/${NEW_SNAKE}_/g" "$f"
 	perl -pi -e "s/\b${OLD_SNAKE}\b/${NEW_SNAKE}/g" "$f"
 done
 
@@ -195,7 +236,10 @@ for f in "${TARGETS[@]}"; do
 	# /wp-starter"      (composer vendor/package: "vendor/wp-starter")
 	perl -pi -e "s#/${OLD_SLUG}\"#/${NEW_SLUG}\"#g" "$f"
 	# wp-starter-       (enqueue handles: 'wp-starter-style' → quoted form handled above, but handle the tail)
-	perl -pi -e "s/\b${OLD_SLUG}-/${NEW_SLUG}-/g" "$f"
+	#                   ${SLUG_GUARD} is a negative lookahead that prevents this
+	#                   pattern from re-matching inside a new-slug token when
+	#                   NEW_SLUG starts with `${OLD_SLUG}-` (Issue #4 defence).
+	perl -pi -e "s/\b${OLD_SLUG}-${SLUG_GUARD}/${NEW_SLUG}-/g" "$f"
 	# @package wp-starter
 	perl -pi -e "s/(\@package\s+)${OLD_SLUG}\b/\$1${NEW_SLUG}/g" "$f"
 	# Text Domain: wp-starter   (style.css)
@@ -257,6 +301,15 @@ raw_leftover=$(grep -rn "${OLD_SLUG}\|${OLD_SNAKE}_" \
 	--include='*.php' --include='*.html' --include='*.json' --include='*.css' --include='*.xml' --include='*.dist' --include='*.md' --include='*.sh' \
 	--exclude='rename-theme.sh' \
 	"${leftover_roots[@]}" 2>/dev/null || true)
+
+# Documentation references to the template's origin (e.g. a README
+# `gh repo create ... --template <owner>/wp-starter` instruction) tell
+# future users how to fork a new project from this template. They must
+# survive rename — filter them out of the leftover check entirely so
+# they are not flagged as unexpected or listed as "update these by hand".
+raw_leftover=$(printf '%s\n' "$raw_leftover" \
+	| grep -vE -- "--template [^[:space:]]+/${OLD_SLUG}\b" \
+	|| true)
 
 # Expected leftovers: URLs pointing at the template's origin repo.
 expected=$(printf '%s\n' "$raw_leftover" | grep -E 'https?://|Theme URI|git\+https' || true)
