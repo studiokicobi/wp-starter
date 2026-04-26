@@ -396,12 +396,10 @@ fi
 # ---------------------------------------------------------------------------
 # Accessibility gate (pa11y-ci). Needs a running WordPress instance — normally
 # wp-env. wp-env defaults to port 8888 but shifts to 8890+ when another
-# project already holds 8888, so we ask wp-env for the real home URL rather
-# than trusting a hardcoded port (which would silently test the other
-# project's site). If wp-env isn't reachable at all we fall back to 8888
-# (the CI case) and then to a warning — verify stays usable for non-a11y
-# workflows. When the server is up, pa11y-ci is a real gate: any WCAG2AA
-# violation fails verify.
+# project already holds 8888, so the a11y runner asks wp-env for the real home
+# URL rather than trusting a hardcoded port. If wp-env isn't reachable at all,
+# verify keeps the non-a11y workflows usable by warning instead of failing.
+# When the server is up, pa11y-ci is a real gate: any WCAG2AA violation fails.
 # ---------------------------------------------------------------------------
 section "Accessibility"
 
@@ -415,43 +413,9 @@ if command -v npm > /dev/null; then
 				|| true
 		)
 	fi
-	if [ -z "$WP_URL" ] && curl -fsS --max-time 2 http://localhost:8888/ > /dev/null 2>&1; then
-		WP_URL="http://localhost:8888"
-	fi
-
+	WP_URL="${WP_URL%/}"
 	if [ -n "$WP_URL" ] && curl -fsS --max-time 2 "$WP_URL/" > /dev/null 2>&1; then
-		# Run pa11y-ci at two viewports so mobile-only a11y regressions (overflow,
-		# focus rings clipped by narrow viewports, tap-target sizing) don't slip
-		# past the desktop-only sweep. pa11y-ci's CLI has no --viewport flag, so
-		# we layer a temporary config on top of .pa11yci.json for each run.
-		pa11y_tmpdir=$(mktemp -d)
-		trap 'rm -rf "$pa11y_tmpdir"' EXIT
-		desktop_cfg="$pa11y_tmpdir/desktop.json"
-		mobile_cfg="$pa11y_tmpdir/mobile.json"
-		cat > "$desktop_cfg" <<'JSON'
-{
-	"defaults": {
-		"standard": "WCAG2AA",
-		"timeout": 30000,
-		"includeWarnings": false,
-		"chromeLaunchConfig": { "args": [ "--no-sandbox", "--disable-dev-shm-usage" ] },
-		"viewport": { "width": 1280, "height": 800 }
-	}
-}
-JSON
-		cat > "$mobile_cfg" <<'JSON'
-{
-	"defaults": {
-		"standard": "WCAG2AA",
-		"timeout": 30000,
-		"includeWarnings": false,
-		"chromeLaunchConfig": { "args": [ "--no-sandbox", "--disable-dev-shm-usage" ] },
-		"viewport": { "width": 375, "height": 667 }
-	}
-}
-JSON
-		run "pa11y-ci desktop 1280x800 ($WP_URL)" npx --silent pa11y-ci --config "$desktop_cfg" "$WP_URL/" "$WP_URL/?p=1"
-		run "pa11y-ci mobile 375x667 ($WP_URL)"   npx --silent pa11y-ci --config "$mobile_cfg" "$WP_URL/" "$WP_URL/?p=1"
+		run "pa11y-ci wp-env desktop/mobile ($WP_URL)" "$ROOT/bin/a11y-wp-env.sh"
 	else
 		warn "wp-env not reachable — start it with 'npm run env:start' to exercise the a11y gate"
 	fi

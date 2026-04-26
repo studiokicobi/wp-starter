@@ -62,19 +62,24 @@ This template isn't a Bedrock scaffold, but it's compatible: drop the theme dire
 
 ## CI
 
-This starter ships `.github/workflows/ci.yml` — a GitHub Actions workflow that runs on every push to `main` and every PR. Three jobs:
+This starter ships `.github/workflows/ci.yml` — a GitHub Actions workflow that runs on every push to `main` and every PR. Six jobs:
 
 | Job | What it runs | Depends on |
 | --- | --- | --- |
-| `node` | `npm run lint`, `npm run lint:css`, `npm run build` | — |
+| `node` | `npm run lint`, `npm run lint:css`, `npm run build`, then fails if committed `build/` output is stale | — |
 | `php` | `composer phpcs`, `composer phpstan` | — |
+| `scaffold` | Representative `block:new` and `cpt:new` probes, invalid input rejection probes, `npm run build`, `npm run verify` | — |
+| `package` | `npm run package:check`, which builds the installable theme zip and verifies package contents | `node` |
+| `a11y` | Starts `wp-env`, runs `npm run a11y` at desktop/mobile widths, then stops `wp-env` | `node` |
 | `verify` | `bin/verify-theme.sh` | `node` + `php` |
 
-`bin/verify-theme.sh` re-runs the lint/build/phpcs/phpstan stack (redundant but cheap) and adds the block-theme contract greps plus the `pa11y-ci` WCAG2AA gate. The committed workflow does *not* boot `wp-env`, so `pa11y-ci` degrades to a yellow warning in CI — the accessibility gate is designed to run locally before project delivery with `npm run env:start && npm run verify`.
+`bin/verify-theme.sh` re-runs the lint/build/phpcs/phpstan stack (redundant but cheap) and adds the block-theme contract greps plus the `pa11y-ci` WCAG2AA gate. The `verify` job does not boot `wp-env`, so that embedded a11y check still degrades to a yellow warning there. The separate `a11y` job boots `wp-env` and makes WCAG2AA a hard CI gate.
 
-If a project needs `pa11y-ci` gating in CI (e.g. a client build that requires WCAG sign-off per PR), add a `npm run env:start` step before the verify step and an `npm run env:stop` step with `if: always()` after. GitHub-hosted runners ship Docker preinstalled, so `wp-env` works in the default `ubuntu-latest` image without extra setup. Expect CI time to grow by roughly 90 seconds per run.
+GitHub-hosted runners ship Docker preinstalled, so `wp-env` works in the default `ubuntu-latest` image without extra setup. Expect the `a11y` job to add roughly 90 seconds per run.
 
-`pa11y-ci` asks `wp-env` for the real home URL (`wp option get home`) rather than trusting port 8888 — `wp-env` shifts ports when another project already holds the default, which would otherwise silently test another project's site.
+`pa11y-ci` asks `wp-env` for the real home URL (`wp option get home`) rather than trusting port 8888 — `wp-env` shifts ports when another project already holds the default, which would otherwise silently test another project's site. `npm run a11y` fails if `wp-env` is not running; `npm run verify` warns and continues so non-runtime checks remain usable.
+
+`npm run package` writes `.dist/<theme-slug>.zip`. `npm run package:check` validates that the zip has a single top-level theme directory, contains the runtime files WordPress needs (`style.css`, `theme.json`, templates/parts/patterns, and compiled `build/` assets), and excludes development-only directories such as `.github/`, `.codex/`, `docs/`, `src/`, `node_modules/`, and `vendor/`.
 
 For deploys, use the host's recommended flow rather than running `rsync` or `scp` directly — every host has an atomic-swap story that avoids half-deployed states.
 
